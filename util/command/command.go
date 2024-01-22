@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
-	"syscall"
 	"time"
 )
 
@@ -28,23 +27,6 @@ type Command struct {
 	stderr        bytes.Buffer
 }
 
-func NewCmd(c *Command) (*Command, error) {
-	if c.Timeout == 0*time.Second {
-		c.Timeout = DEFAULT_RUN_TIMEOUT * time.Second
-	}
-	if c.TerminateChan == nil {
-		c.TerminateChan = make(chan int)
-	}
-	cmd := exec.Command("/bin/bash", "-c", c.Cmd)
-	if c.Setpgid {
-		cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
-	}
-	cmd.Stderr = &c.stderr
-	cmd.Stdout = &c.stdout
-	c.command = cmd
-
-	return c, nil
-}
 
 func (c *Command) Run() error {
 	if err := c.command.Start(); err != nil {
@@ -82,10 +64,3 @@ func (c *Command) Stdout() string {
 	return strings.TrimSpace(string(c.stdout.Bytes()))
 }
 
-func (c *Command) terminate() error {
-	if c.Setpgid {
-		return syscall.Kill(-c.command.Process.Pid, syscall.SIGKILL)
-	} else {
-		return syscall.Kill(c.command.Process.Pid, syscall.SIGKILL)
-	}
-}
