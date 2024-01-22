@@ -5,10 +5,9 @@
 package gofile
 
 import (
-	"io/ioutil"
 	"os"
 )
 
 func CreateFile(filePath string, data []byte, perm os.FileMode) error {
-	return ioutil.WriteFile(filePath, data, perm)
+	return os.WriteFile(filePath, data, perm)
 }
