@@ -18,7 +18,7 @@ func ApiPriv() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//language, _ := c.Cookie("_zoom_language")
 
-		token, _ := c.Cookie("_zoom_identity")
+		token := c.GetHeader("Authorization")
 
 		path := strings.TrimSpace(c.Request.URL.Path)
 
