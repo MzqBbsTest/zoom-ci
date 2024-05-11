@@ -1,12 +1,20 @@
 import md5 from 'blueimp-md5'
 import Cookies from 'js-cookie'
 import moment from 'moment'
+import Vue from 'vue';
 
 let loginTokenKey = '_zoom_identity'
 let languageCookieKey = '_zoom_language'
+const EventBus = new Vue();
+
 
 export default {
-
+    EmitEventGlobal(messageName, data){
+        EventBus.$emit(messageName, data); 
+    },
+    BindEventGlobal(messageName, callback){
+        EventBus.$on(messageName, callback);
+    },
     MessageSuccess(cb){
         this.$message({
             message: this.$t('operate_success'),

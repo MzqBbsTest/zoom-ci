@@ -10,13 +10,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Unknwon/goconfig"
-	"github.com/zoom-ci/zoom-ci/server"
-	"io"
-	"os"
-
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/zoom-ci/zoom-ci/server"
 	"github.com/zoom-ci/zoom-ci/util/golog"
 	"github.com/zoom-ci/zoom-ci/util/gopath"
+	"io"
+	"os"
 )
 
 var (
@@ -56,7 +56,7 @@ type zoom struct {
 }
 
 func newZoom() *zoom {
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.DebugMode)
 	return &zoom{
 		Gin: gin.New(),
 	}
@@ -75,7 +75,15 @@ func (s *zoom) Init(cfg *server.Config) error {
 	}
 	s.registerMail()
 	s.registerLog()
+	config := cors.Config{
+		AllowOrigins:     []string{"http://localhost:8080"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Cookie"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}
 
+	s.Gin.Use(cors.New(config))
 	if err := s.initEnv(); err != nil {
 		return err
 	}

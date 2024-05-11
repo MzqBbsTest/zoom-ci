@@ -174,6 +174,26 @@ const routerMap = [
             },
         ],
     },
+    {
+        path: '/certificate',
+        name: 'certificate',
+        component: _import('Layer'),
+        meta: {
+            title: i18n.t('certificate'),
+            icon: 'icon-server',
+        },
+        children: [
+            {
+                path: 'sshkey',
+                name: 'sshkeyList',
+                meta: {
+                    title: i18n.t('sshkey_manage'),
+                    role: [priv.SERVER_VIEW],
+                },
+                component: _import('certificate/Sshkey'),
+            },
+        ],
+    },
 ]
 
 const router = new Router({

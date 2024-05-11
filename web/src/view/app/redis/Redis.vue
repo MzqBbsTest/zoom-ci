@@ -3,7 +3,7 @@
         <el-card shadow="never">
             <el-row class="app-btn-group">
                 <el-col :span="4">
-                    <el-button v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_NEW)" @click="openAddDialogHandler" type="primary" size="medium" icon="iconfont left small icon-add">{{ $t('add_cluster') }}</el-button>&nbsp;
+                    <el-button v-if="$root.CheckPriv($root.Priv.SERVER_REDIS_NEW)" @click="openAddDialogHandler" type="primary" size="medium" icon="iconfont left small icon-add">{{ $t('add_redis') }}</el-button>&nbsp;
                 </el-col>
                 <el-col :span="6" :offset="14">
                     <el-input @keyup.enter.native="searchHandler" v-model="searchInput" size="medium" :placeholder="$t('please_input_keyword_id_or_name')">
@@ -18,30 +18,15 @@
                 :data="tableData">
                 <el-table-column prop="id" label="ID" width="80"></el-table-column>
                 <el-table-column prop="name" :label="$t('name')"></el-table-column>
-                <el-table-column :label="$t('operate')" width="380" align="right">
+                <el-table-column :label="$t('operate')" width="180" align="right">
                     <template slot-scope="scope">
                         <el-button
-                        v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"
+                        v-if="$root.CheckPriv($root.Priv.SERVER_REDIS_EDIT)"
                         icon="el-icon-edit"
                         type="text"
                         @click="openEditDialogHandler(scope.row)">{{ $t('edit') }}</el-button>
                         <el-button
-                        v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"
-                        icon="el-icon-edit"
-                        type="text"
-                        @click="openAppPathDialogHandler(scope.row)">{{ $t('app_path') }}</el-button>
-                        <el-button
-                        v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"
-                        icon="el-icon-edit"
-                        type="text"
-                        @click="openCinfigDialogHandler(scope.row)">{{ $t('config') }}</el-button>
-                        <el-button
-                        v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"
-                        icon="el-icon-edit"
-                        type="text"
-                        @click="openCinfigDialogHandler(scope.row)">{{ $t('web_host') }}</el-button>
-                        <el-button
-                        v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_DEL)"
+                        v-if="$root.CheckPriv($root.Priv.SERVER_REDIS_DEL)"
                         type="text"
                         icon="el-icon-delete"
                         class="app-danger"
@@ -60,11 +45,11 @@
             </el-pagination>
         </el-card>
 
-        <el-dialog :width="$root.DialogLargeWidth" :title="dialogTitle" :visible.sync="dialogVisible" @close="dialogCloseHandler">
+        <el-dialog :width="$root.DialogSmallWidth" :title="dialogTitle" :visible.sync="dialogVisible" @close="dialogCloseHandler">
             <div class="app-dialog" v-loading="dialogLoading">
                 <el-form ref="dialogRef" :model="dialogForm" size="medium" label-width="80px">
                     <el-form-item 
-                        :label="$t('cluster_name')"
+                        :label="$t('redis_name')"
                         prop="name"
                         :rules="[
                             { required: true, message: $t('name_cannot_empty'), trigger: 'blur'},
@@ -73,16 +58,17 @@
                     </el-form-item>
 
                     <el-form-item 
-                        :label="$t('cluster_servers')"
-                        prop="servers">
-                        <el-transfer 
-                        filterable 
-                        :filter-method="filterMethod" 
-                        v-model="dialogForm.servers" 
-                        :data="servers"
-                        target-order=""
-                        :titles="[$t('servers'), $t('cluster_servers')]"
-                        ></el-transfer>
+                        :label="$t('redis_path')"
+                        prop="path"
+                       >
+                        <el-input v-model="dialogForm.path" autocomplete="off"></el-input>
+                    </el-form-item>
+                    
+                    <el-form-item 
+                        :label="$t('redis_config')"
+                        prop="config"
+                       >
+                        <el-input v-model="dialogForm.config" autocomplete="off"></el-input>
                     </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
@@ -92,25 +78,14 @@
             </div>
         </el-dialog>
 
-        <GroupPath  ></GroupPath>
-
-        <GroupConfigDialog ></GroupConfigDialog>
     </div>
 </template>
 
 <script>
-import { listServerApi, newGroupApi, updateGroupApi, listGroupApi, deleteGroupApi, detailGroupApi } from '@/api/server'
-import GroupPath from './GroupPath.vue'
-import GroupConfigDialog from './GroupConfig.vue'
-
+import { listAPPRedisApi, newAPPRedisApi, updateAPPRedisApi, detailAPPRedisApi, deleteAPPRedisApi } from '@/api/redis'
 export default {
-    components: {
-        GroupPath,
-        GroupConfigDialog
-    },
     data() {
         return {
-    
             searchInput: '',
             dialogVisible: false,
             dialogTitle: '',
@@ -120,33 +95,23 @@ export default {
 
             tableData: [],
             tableLoading: false,
-            servers:[],
-            
+            servers:[]
         }
     },
     methods: {
-        filterMethod(query, item) {
-            return item.label.indexOf(query) > -1;
-        },
         searchHandler() {
             this.$root.PageInit()
             this.loadTableData()
         },
         openAddDialogHandler() {
             this.dialogVisible = true
-            this.dialogTitle = this.$t('app_path')
-        },
-        openAppPathDialogHandler(row){
-            this.$root.EmitEventGlobal("openAppPathDialogHandler", {group:row});
-        },
-        openCinfigDialogHandler(row) {
-            this.$root.EmitEventGlobal("openCinfigDialogHandler", {group:row});
+            this.dialogTitle = this.$t('add_redis')
         },
         openEditDialogHandler(row) {
             this.dialogVisible = true
-            this.dialogTitle = this.$t('edit_cluster')
+            this.dialogTitle = this.$t('edit_redis')
             this.dialogLoading = true
-            detailGroupApi({id: row.id}).then(res => {
+            detailAPPRedisApi({id: row.id}).then(res => {
                 this.dialogLoading = false
                 this.dialogForm = res
             }).catch(err => {
@@ -162,7 +127,7 @@ export default {
         },
         deleteHandler(row) {
             this.$root.ConfirmDelete(() => {
-                deleteGroupApi({id: row.id}).then(res => {
+                deleteAPPRedisApi({id: row.id}).then(res => {
                     this.$root.MessageSuccess()
                     this.$root.PageReset()
                     this.loadTableData()
@@ -181,9 +146,9 @@ export default {
                 this.btnLoading = true
                 let opFn
                 if (this.dialogForm.id) {
-                    opFn = updateGroupApi
+                    opFn = updateAPPRedisApi
                 } else {
-                    opFn = newGroupApi
+                    opFn = newAPPRedisApi
                 }
                 opFn(this.dialogForm).then(res => {
                     this.$root.MessageSuccess(() => {
@@ -198,7 +163,7 @@ export default {
         },
         loadTableData() {
             this.tableLoading = true
-            listGroupApi({keyword: this.searchInput, offset: this.$root.PageOffset(), limit: this.$root.PageSize}).then(res => {
+            listAPPRedisApi({keyword: this.searchInput, offset: this.$root.PageOffset(), limit: this.$root.PageSize}).then(res => {
                 this.tableData = res.list
                 this.$root.Total = res.total
                 this.tableLoading = false
@@ -206,14 +171,7 @@ export default {
                 this.tableLoading = false
             })
 
-            listServerApi().then(res => {
-                res.list.map(res=>{
-                    this.servers.push({
-                        "key": res.id,
-                        "label": res.name,
-                    })
-                })
-            })
+          
         }
     },
     mounted() {

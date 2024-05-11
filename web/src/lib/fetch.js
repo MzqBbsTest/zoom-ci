@@ -3,9 +3,10 @@ import qs from 'qs'
 import Vue from 'vue'
 import i18n from '@/lang'
 import Code from './code.js'
+import Util from './util.js'
 import Router from '@/router'
 
-let API_URL = '/api'
+let API_URL = 'http://192.168.1.130:7002/api'
 let CancelToken = axios.CancelToken
 
 Vue.prototype.$CancelAjaxRequet = function() {}
@@ -94,7 +95,10 @@ export function post(url, data, params, headers) {
             cancel()
         }
     })
-
+    if(!config.headers){
+        config.headers = {}
+    }
+    config.headers["Authorization"] = Util.GetLoginToken();
     return service(config)
 }
 
@@ -117,7 +121,10 @@ export function get(url, params, headers) {
             cancel()
         }
     })
-
+    if(!config.headers){
+        config.headers = {}
+    }
+    config.headers["Authorization"] = Util.GetLoginToken();
     return service(config)
 }
 

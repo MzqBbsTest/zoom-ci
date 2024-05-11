@@ -18,7 +18,7 @@ type QueryBind struct {
 }
 
 type ServerForm struct {
-	GroupId int    `form:"group_id" binding:"required"`
+	GroupId int    `form:"group_id" default="0"`
 	Name    string `form:"name" binding:"required"`
 	Ip      string `form:"ip" binding:"required"`
 	SSHPort int    `form:"ssh_port" binding:"required,gte=1,lte=65535"`
