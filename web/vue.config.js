@@ -8,5 +8,5 @@ module.exports = {
         }
     },
     publicPath: '/web/dist',
-    outputDir: "dist"
+    outputDir: "dist",
 };

@@ -1,12 +1,16 @@
 // +build linux darwin
 
 package command
+import (
 
-import "golang.org/x/sys/unix"
+	"os/exec"
+	"syscall"
+	"time"
+)
 
 func (c *Command) terminate() error {
 	if c.Setpgid {
-		unix.Syscall()
+		//unix.Syscall()
 		return syscall.Kill(-c.command.Process.Pid, syscall.SIGKILL)
 	} else {
 		return syscall.Kill(c.command.Process.Pid, syscall.SIGKILL)

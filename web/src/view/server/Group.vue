@@ -39,7 +39,7 @@
                         v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"
                         icon="el-icon-edit"
                         type="text"
-                        @click="openCinfigDialogHandler(scope.row)">{{ $t('web_host') }}</el-button>
+                        @click="openRunDialogHandler(scope.row)">{{ $t('run') }}</el-button>
                         <el-button
                         v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_DEL)"
                         type="text"
@@ -93,20 +93,21 @@
         </el-dialog>
 
         <GroupPath  ></GroupPath>
-
-        <GroupConfigDialog ></GroupConfigDialog>
+        <GroupConfig ></GroupConfig>
+        <GroupRun ></GroupRun>
     </div>
 </template>
 
 <script>
 import { listServerApi, newGroupApi, updateGroupApi, listGroupApi, deleteGroupApi, detailGroupApi } from '@/api/server'
 import GroupPath from './GroupPath.vue'
-import GroupConfigDialog from './GroupConfig.vue'
-
+import GroupConfig from './GroupConfig.vue'
+import GroupRun from './GroupRun.vue'
 export default {
     components: {
         GroupPath,
-        GroupConfigDialog
+        GroupRun,
+        GroupConfig
     },
     data() {
         return {
@@ -141,6 +142,9 @@ export default {
         },
         openCinfigDialogHandler(row) {
             this.$root.EmitEventGlobal("openCinfigDialogHandler", {group:row});
+        },
+        openRunDialogHandler(row){
+            this.$root.EmitEventGlobal("openRunDialogHandler", {group:row});
         },
         openEditDialogHandler(row) {
             this.dialogVisible = true

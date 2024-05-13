@@ -11,6 +11,7 @@ import data from './lib/data.js'
 import './scss/app.scss'
 
 
+
 let localeLang
 if (global.navigator.language) {
     localeLang = global.navigator.language
@@ -27,6 +28,7 @@ moment.locale(localeLang)
 
 Vue.config.productionTip = false
 Vue.use(ElementUI);
+
 
 new Vue({
     i18n,

@@ -59,13 +59,24 @@ export function deleteGroupPathApi(data) {
     return post('/server/group/path/delete', data)
 }
 
-export function detailGrouConfigpApi(params) {
-    return new Promise.resolve({
-        data:{
-            
-        }
+export function listGroupConfigApi(params) {
+    return Promise.resolve({
+        "list": [
+            {
+                "id": 3,
+                "name": "nginx.conf",
+                "file": "/nginx.conf",
+                "ctime": "2024-05-13"
+            },
+            {
+                "id": 1,
+                "name": "php.conf",
+                "file": "/php.conf",
+                "ctime": "2024-05-13"
+            },
+        ],
     });
-    return get('/server/group/config/detail', params)
+    return get('/server/group/config/list', params)
 }
 
 export function updateGrouConfigpApi(data) {
@@ -117,6 +128,26 @@ export function listServerApi(params) {
     return get('/server/list', params)
 }
 
+export function listGroupRunApi(params){
+    return Promise.resolve({
+        "list": [
+            {
+                "id": 3,
+                "name": "nginx.conf",
+                "status": "1",
+                "ctime": "2024-05-13"
+            },
+            {
+                "id": 1,
+                "name": "php.conf",
+                "status": "2",
+                "ctime": "2024-05-13"
+            },
+        ],
+    });
+    return get('/server/group/config/list', params)
+}
+
 export function deleteServerApi(data) {
     return post('/server/delete', data)
 }
@@ -160,3 +191,4 @@ export function deleteServerSshkeyApi(data) {
 export function detailServerSshkeyApi(data) {
     return get('/server/sshkey/detail', data)
 }
+
