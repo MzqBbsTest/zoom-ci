@@ -21,6 +21,7 @@ export function updateGroupApi(data) {
 }
 
 export function listGroupPathApi(data) {
+    console.log('/server/group/path')
     return Promise.resolve({
         "list": [
             {

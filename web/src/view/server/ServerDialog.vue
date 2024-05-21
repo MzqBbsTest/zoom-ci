@@ -122,8 +122,9 @@ export default {
             this.dialogVisible = false
             this.dialogLoading = false
             this.btnLoading = false
-            this.$refs.dialogRef.resetFields();
-            this.$refs.dialogSshKeyRef.resetFields();
+
+            this.$refs.dialogRef && this.$refs.dialogRef.resetFields();
+            this.$refs.dialogSshKeyRef && this.$refs.dialogSshKeyRef.resetFields();
             this.dialogForm = {
                 ssh_port: 22,
             }
