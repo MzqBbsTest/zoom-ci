@@ -15,6 +15,7 @@ import (
 	"github.com/zoom-ci/zoom-ci/server/router/project"
 	reqApi "github.com/zoom-ci/zoom-ci/server/router/route/api"
 	"github.com/zoom-ci/zoom-ci/server/router/server"
+	"github.com/zoom-ci/zoom-ci/server/router/ssh_key"
 	"github.com/zoom-ci/zoom-ci/server/router/user"
 	"net/http"
 )
@@ -38,6 +39,9 @@ func RegisterRoute() {
 		api.POST(reqApi.SERVER_GROUP_DELETE, server.GroupDelete)
 		api.GET(reqApi.SERVER_GROUP_DETAIL, server.GroupDetail)
 		api.POST(reqApi.SERVER_GROUP_UPDATE, server.GroupUpdate)
+		api.GET(reqApi.SERVER_GROUP_PATH, server.GroupPath)
+		api.POST(reqApi.SERVER_GROUP_PATH, server.GroupPathAdd)
+
 		api.POST(reqApi.SERVER_ADD, server.ServerAdd)
 		api.POST(reqApi.SERVER_UPDATE, server.ServerUpdate)
 		api.GET(reqApi.SERVER_LIST, server.ServerList)
@@ -92,6 +96,12 @@ func RegisterRoute() {
 		api.POST(reqApi.DEPLOY_DEPLOY_STOP, deploy.DeployStop)
 		api.GET(reqApi.DEPLOY_APPLY_ROLLBACK, deploy.ApplyRollbackList)
 		api.POST(reqApi.DEPLOY_DEPLOY_ROLLBACK, deploy.DeployRollback)
+
+		api.GET(reqApi.SSHKEY_LIST, ssh_key.SshKeyList)
+		api.POST(reqApi.SSHKEY_ADD, ssh_key.SshKeyAdd)
+		api.POST(reqApi.SSHKEY_UPDATE, ssh_key.SshKeyUpdate)
+		api.POST(reqApi.SSHKEY_DELETE, ssh_key.SshKeyDelete)
+		api.GET(reqApi.SSHKEY_DETAIL, ssh_key.SshKeyDetail)
 	}
 	RegisterWebRouter()
 }

@@ -107,3 +107,45 @@ func GroupUpdate(c *gin.Context) {
 	}
 	render.Success(c)
 }
+
+func GroupPath(c *gin.Context) {
+	var groupForm GroupForm
+	if err := c.ShouldBind(&groupForm); err != nil {
+		render.ParamError(c, err.Error())
+		return
+	}
+	if groupForm.ID == 0 {
+		render.ParamError(c, "id cannot be empty")
+		return
+	}
+	group := &server.Group{
+		ID:   groupForm.ID,
+		Name: groupForm.Name,
+	}
+	if err := group.Update(); err != nil {
+		render.AppError(c, err.Error())
+		return
+	}
+	render.Success(c)
+}
+
+func GroupPathAdd(c *gin.Context) {
+	var groupForm GroupForm
+	if err := c.ShouldBind(&groupForm); err != nil {
+		render.ParamError(c, err.Error())
+		return
+	}
+	if groupForm.ID == 0 {
+		render.ParamError(c, "id cannot be empty")
+		return
+	}
+	group := &server.Group{
+		ID:   groupForm.ID,
+		Name: groupForm.Name,
+	}
+	if err := group.Update(); err != nil {
+		render.AppError(c, err.Error())
+		return
+	}
+	render.Success(c)
+}
