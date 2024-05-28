@@ -87,6 +87,11 @@ func ApiPriv() gin.HandlerFunc {
 			return
 		}
 
+		if login.RoleId == 1 {
+			c.Next()
+			return
+		}
+
 		if pass := user.CheckHavePriv(path, role.Privilege); !pass {
 			respondWithError(c, render.CODE_ERR_NO_PRIV, "no priv")
 			return

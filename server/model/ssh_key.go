@@ -8,6 +8,7 @@ type SSHKey struct {
 	ID         int       `gorm:"primaryKey;column:id" json:"id"`
 	UserID     int       `gorm:"column:user_id" json:"userId"`
 	Name       string    `gorm:"column:name" json:"name"`
+	Password   string    `gorm:"column:password" json:"password"`
 	PublicKey  string    `gorm:"column:public_key" json:"publicKey"`
 	PrivateKey string    `gorm:"column:private_key" json:"privateKey"`
 	CreatedAt  time.Time `gorm:"column:created_at" json:"createdAt"`

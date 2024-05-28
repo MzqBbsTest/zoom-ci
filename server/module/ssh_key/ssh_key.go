@@ -8,12 +8,13 @@ import (
 
 type SSHKey struct {
 	ID         int       `json:"id"`
-	UserID     int       `json:"userId"`
+	UserID     int       `json:"user_id"`
 	Name       string    `json:"name"`
-	PublicKey  string    `json:"publicKey"`
-	PrivateKey string    `json:"privateKey"`
-	CreatedAt  time.Time `json:"createdAt"`
-	UpdatedAt  time.Time `json:"updatedAt"`
+	Password   string    `json:"password"`
+	PublicKey  string    `json:"public_key"`
+	PrivateKey string    `json:"private_key"`
+	CreatedAt  time.Time `json:"-"`
+	UpdatedAt  time.Time `json:"-"`
 }
 
 func (p *SSHKey) Total(where []model.WhereParam) (int, error) {
@@ -30,7 +31,7 @@ func (p *SSHKey) Total(where []model.WhereParam) (int, error) {
 func (p *SSHKey) List(where []model.WhereParam, offset, limit int) ([]interface{}, error) {
 	sshKey := &model.SSHKey{}
 	list, ok := sshKey.List(model.QueryParam{
-		Fields: "id, name",
+		Fields: "id, name, user_id",
 		Offset: offset,
 		Limit:  limit,
 		Order:  "id DESC",
@@ -42,9 +43,12 @@ func (p *SSHKey) List(where []model.WhereParam, offset, limit int) ([]interface{
 
 	var projList []interface{}
 	for _, l := range list {
-		projList = append(projList, SSHKey{
-			ID:   l.ID,
-			Name: l.Name,
+		projList = append(projList, map[string]interface{}{
+			"id":      l.ID,
+			"name":    l.Name,
+			"user_id": l.UserID,
+			//PublicKey: l.PublicKey,
+			//PrivateKey: l.PrivateKey,
 			//NeedAudit: l.NeedAudit,
 			//Status:    l.Status,
 		})
@@ -93,6 +97,7 @@ func (p *SSHKey) Detail() error {
 
 	p.ID = sshKey.ID
 	p.UserID = sshKey.UserID
+	p.Name = sshKey.Name
 	p.PublicKey = sshKey.PublicKey
 	p.PrivateKey = sshKey.PrivateKey
 

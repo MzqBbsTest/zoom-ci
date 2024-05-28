@@ -19,6 +19,8 @@ type QueryBind struct {
 type SshKeyFormBind struct {
 	ID         int    `form:"id"`
 	Name       string `form:"name" binding:"required"`
+	AuthKey    bool   `form:"auth_key" binding:"required"`
+	Password   string `form:"password"`
 	PublicKey  string `form:"public_key"`
 	PrivateKey string `form:"private_key"`
 }
@@ -68,6 +70,11 @@ func SshKeyAdd(c *gin.Context) {
 	}
 	userId, _ := c.Get("user_id")
 
+	// 自动生成签名
+	if form.AuthKey {
+
+	}
+
 	info := &ssh_key.SSHKey{
 		UserID:     userId.(int),
 		Name:       form.Name,
@@ -96,6 +103,7 @@ func SshKeyUpdate(c *gin.Context) {
 		ID:         form.ID,
 		UserID:     userId.(int),
 		Name:       form.Name,
+		Password:   form.Password,
 		PublicKey:  form.PublicKey,
 		PrivateKey: form.PrivateKey,
 	}
@@ -127,14 +135,14 @@ func SshKeyDelete(c *gin.Context) {
 }
 
 func SshKeyDetail(c *gin.Context) {
-	id := gostring.Str2Int(c.PostForm("id"))
-	if id == 0 {
+	id, ok := c.GetQuery("id")
+	if !ok || len(id) == 0 {
 		render.ParamError(c, "id cannot be empty")
 		return
 	}
 
 	member := &ssh_key.SSHKey{
-		ID: id,
+		ID: gostring.Str2Int(id),
 	}
 	if err := member.Detail(); err != nil {
 		render.AppError(c, err.Error())
