@@ -49,15 +49,15 @@
             <div class="app-dialog" v-loading="dialogLoading">
                 <el-form ref="dialogRef" :model="dialogForm" size="medium" label-width="80px">
                     <el-form-item 
-                        :label="$t('sshkey_name')"
+                        :label="$t('name')"
                         prop="name"
                         :rules="[
                             { required: true, message: $t('sshkey_cannot_empty'), trigger: 'blur'},
                         ]">
                         <el-input v-model="dialogForm.name" autocomplete="off"></el-input>
                     </el-form-item>
-                    <el-form-item :label="$t('auth_key')">
-                        <el-switch v-model="dialogForm.auth_key"></el-switch>
+                    <el-form-item :label="$t('password')">
+                        <el-switch v-model="dialogForm.password"></el-switch>
                     </el-form-item>
                     <el-form-item :label="$t('public_key')">
                         <el-input type="textarea" v-model="dialogForm.public_key"></el-input>
@@ -160,7 +160,8 @@ export default {
         loadTableData() {
             this.tableLoading = true
             listSshkeyApi({keyword: this.searchInput, offset: this.$root.PageOffset(), limit: this.$root.PageSize}).then(res => {
-                this.tableData = res.list
+                console.log(res)
+                this.tableData = res.list || []
                 this.$root.Total = res.total
                 this.tableLoading = false
             }).catch(err => {

@@ -6,14 +6,14 @@ import Code from './code.js'
 import Util from './util.js'
 import Router from '@/router'
 
-let API_URL = 'http://192.168.1.130:7002/api'
+// let API_URL = 'http://192.168.1.130:7002/api'
 let CancelToken = axios.CancelToken
 
 Vue.prototype.$CancelAjaxRequet = function() {}
 Vue.prototype.$IsCancel = axios.isCancel
 
 const service = axios.create({
-    baseURL: API_URL + '/',
+    baseURL: '/api/',
     timeout: 60000,
     withCredentials: true,
 })

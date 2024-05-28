@@ -343,4 +343,8 @@ export default {
     'stop_all':'批量停止',
     'start_user_cannot_empty':'启动用户不能为空',
     'start_command_cannot_empty':'启动命令不能为空',
+    'public_key': '公钥',
+    'private_key': '私钥',
+    'add_sshkey': '创建密钥',
+    'auth_key':'自动生成',
 }

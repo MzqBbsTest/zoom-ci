@@ -42,4 +42,8 @@ export default {
     SERVER_PUBLIC_SSHKEY: 4105,
 
     SYSTEM_STATUS: 5001,
+
+    SSHKEY_NEW: 6001,
+    SSHKEY_EDIT: 6002,
+    SSHKEY_DEL: 6003,
 }

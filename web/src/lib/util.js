@@ -142,7 +142,7 @@ export default {
     },
 
     CheckPriv(code) {
-        return this.$store.getters['account/getPriv'].indexOf(code) > -1
+        return this.$store.getters['account/getUserId'] ==1 || this.$store.getters['account/getPriv'].indexOf(code) > -1
     },
 
     CheckPrivs(codeArr) {

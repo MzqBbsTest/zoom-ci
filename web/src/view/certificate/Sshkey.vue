@@ -3,7 +3,7 @@
         <el-card shadow="never">
             <el-row class="app-btn-group">
                 <el-col :span="4">
-                    <el-button v-if="$root.CheckPriv($root.Priv.SSHKEY_NEW)" @click="openAddDialogHandler" type="primary" size="medium" icon="iconfont left small icon-add">{{ $t('add_cluster') }}</el-button>&nbsp;
+                    <el-button v-if="$root.CheckPriv($root.Priv.SSHKEY_NEW)" @click="openAddDialogHandler" type="primary" size="medium" icon="iconfont left small icon-add">{{ $t('add_sshkey') }}</el-button>&nbsp;
                 </el-col>
                 <el-col :span="6" :offset="14">
                     <el-input @keyup.enter.native="searchHandler" v-model="searchInput" size="medium" :placeholder="$t('please_input_keyword_id_or_name')">
@@ -49,15 +49,18 @@
             <div class="app-dialog" v-loading="dialogLoading">
                 <el-form ref="dialogRef" :model="dialogForm" size="medium" label-width="80px">
                     <el-form-item 
-                        :label="$t('sshkey_name')"
+                        :label="$t('name')"
                         prop="name"
                         :rules="[
-                            { required: true, message: $t('sshkey_cannot_empty'), trigger: 'blur'},
+                            { required: true, message: $t('name_cannot_empty'), trigger: 'blur'},
                         ]">
                         <el-input v-model="dialogForm.name" autocomplete="off"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('auth_key')">
                         <el-switch v-model="dialogForm.auth_key"></el-switch>
+                    </el-form-item>
+                    <el-form-item :label="$t('password')">
+                        <el-input type="password" v-model="dialogForm.password"></el-input>
                     </el-form-item>
                     <el-form-item :label="$t('public_key')">
                         <el-input type="textarea" v-model="dialogForm.public_key"></el-input>

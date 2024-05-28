@@ -4,6 +4,18 @@ module.exports = {
             '/api': {
                 target: 'http://localhost:7002/',
                 changeOrigin: true,
+                onProxyReq: function (proxyReq, req, res) {
+                    // console.log(proxyReq)
+             
+                    // if (req.headers['authorization']) {
+                    //     proxyReq.setHeader('authorization', req.headers['authorization']);
+                    // }
+
+                    // // 复制Cookie
+                    // if (req.headers['cookie']) {
+                    //     proxyReq.setHeader('cookie', req.headers['cookie']);
+                    // }
+                }
             }
         }
     },
