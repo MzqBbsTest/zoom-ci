@@ -117,4 +117,5 @@ func RegisterWebRouter() {
 	})
 	zoom.App.Gin.GET("/web/dist/*filepath", gin.WrapH(http.FileServer(http.FS(zoom.WebPath))))
 
+	zoom.App.Gin.GET("/api/ws", server.WebSocket)
 }

@@ -17,6 +17,7 @@ import Vue from "vue";
 export default {
     data() {
         return {
+            socket: null,
             dialogVisible: false,
             dialogLoading: false,
             btnLoading: false,
@@ -29,6 +30,7 @@ export default {
             this.dialogVisible = true;
             Vue.nextTick(
                 function () {
+                    let _this = this
                     if (this.term || !this.$refs.terminal) {
                         return;
                     }
@@ -46,7 +48,26 @@ export default {
                     this.term = term;
                     this.runFakeTerminal();
                     
+                    this.socket = new WebSocket('ws://localhost:7002/api/ws');
+                    this.socket.onopen = function() {
+                        term.write('Connected to server\\r\\n');
+                    };
 
+                    this.socket.onerror = function(err) {
+                        console.log(err)
+                    };
+
+                    this.socket.onmessage = function(event) {
+                        console.log("onmessage", event.data)
+                        term.write(event.data);
+                    };
+
+                    term.onData(function(data) {
+                        console.log("onData", data)
+                        _this.socket.send(data);
+                    });
+
+                    
                     // 内容全屏显示-窗口大小发生改变时
                     function resizeScreen(size) {
                         console.log("size", size);
@@ -70,6 +91,8 @@ export default {
             this.dialogVisible = false;
             this.dialogLoading = false;
             this.btnLoading = false;
+            this.socket &&  this.socket.close();
+            this.socket = null
         },
 
         runFakeTerminal() {
