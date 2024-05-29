@@ -99,8 +99,9 @@ func GroupUpdate(c *gin.Context) {
 		return
 	}
 	group := &server.Group{
-		ID:   groupForm.ID,
-		Name: groupForm.Name,
+		ID:        groupForm.ID,
+		Name:      groupForm.Name,
+		ServerIds: groupForm.Servers,
 	}
 	if err := group.Update(); err != nil {
 		render.AppError(c, err.Error())

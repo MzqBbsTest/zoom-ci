@@ -71,13 +71,33 @@ func (g *Group) Create() error {
 }
 
 func (g *Group) Update() error {
-	serverGroup := model.Group{
+	group := model.Group{
 		ID:   g.ID,
 		Name: g.Name,
 	}
-	if ok := serverGroup.Update(); !ok {
+	if ok := group.Update(); !ok {
 		return errors.New("update server group data failed")
 	}
+
+	servers, err := g.GetGroupServers([]int{
+		g.ID,
+	})
+	if err != nil {
+		return err
+	}
+
+	for _, server := range servers {
+		server.Delete()
+	}
+
+	for _, id := range g.ServerIds {
+		serverGroup := model.ServerGroup{
+			ServerId: id,
+			GroupId:  g.ID,
+		}
+		serverGroup.Create()
+	}
+
 	return nil
 }
 
@@ -86,7 +106,7 @@ func (g *Group) GetGroupServers(ids []int) ([]model.ServerGroup, error) {
 	serverGroupList, ok := serverGroup.List(model.QueryParam{
 		Where: []model.WhereParam{
 			model.WhereParam{
-				Field:   "server_id",
+				Field:   "group_id",
 				Tag:     "IN",
 				Prepare: ids,
 			},
@@ -175,9 +195,8 @@ func (g *Group) Detail() error {
 	if err != nil {
 		return errors.New("get server group list failed")
 	}
-
-	if len(serverGroupList) > 0 {
-		g.ServerIds = []int{serverGroupList[0].ServerId}
+	for _, serverGroup := range serverGroupList {
+		g.ServerIds = append(g.ServerIds, serverGroup.ServerId)
 	}
 
 	return nil

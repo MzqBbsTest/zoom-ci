@@ -151,8 +151,13 @@ export default {
             this.dialogTitle = this.$t('edit_cluster')
             this.dialogLoading = true
             detailGroupApi({id: row.id}).then(res => {
+                console.log(res)
                 this.dialogLoading = false
-                this.dialogForm = res
+                this.dialogForm = {
+                    id: res.id,
+                    name: res.name,
+                    servers: res.server_ids || [],
+                }
             }).catch(err => {
                 this.dialogCloseHandler()
             })
@@ -211,6 +216,7 @@ export default {
                 this.tableLoading = false
             })
 
+            this.servers = []
             listServerApi().then(res => {
                 res.list.map(res=>{
                     this.servers.push({

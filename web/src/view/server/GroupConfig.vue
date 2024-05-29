@@ -16,7 +16,7 @@
                 type="primary"
                 size="medium"
                 icon="iconfont left small icon-add"
-                >{{ $t("app_path_add") }}</el-button
+                >{{ $t("app_config_add") }}</el-button
               >&nbsp;
             </el-col>
           </el-row>
@@ -61,7 +61,7 @@
           </el-pagination>
         </el-card>
       </div>
-    </el-dialog>
+    </el-dialog>  
 
     <el-dialog
       :width="$root.DialogLargeWidth"
@@ -118,7 +118,6 @@
               class="upload-demo"
               action="https://jsonplaceholder.typicode.com/posts/"
               :before-remove="beforeRemove"
-              multiple="false"
               :limit="3"
               :on-exceed="handleExceed"
               :file-list="fileList"

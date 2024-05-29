@@ -5,7 +5,7 @@ module.exports = {
                 target: 'http://localhost:7002/',
                 changeOrigin: true,
                 onProxyReq: function (proxyReq, req, res) {
-                    console.log(proxyReq.url, req.url, res)
+                    console.log(proxyReq.url, req.url)
              
                     // if (req.headers['authorization']) {
                     //     proxyReq.setHeader('authorization', req.headers['authorization']);

@@ -20,7 +20,7 @@
                 <el-table-column prop="name" :label="$t('name')"></el-table-column>
                 <el-table-column prop="ip" width="200" label="IP/HOST"></el-table-column>
                 <el-table-column prop="ssh_port" width="100" label="SSH Port"></el-table-column>
-                <el-table-column :label="$t('operate')" width="180" align="right">
+                <el-table-column :label="$t('operate')" width="280" align="right">
                     <template slot-scope="scope">
                         <el-button
                         v-if="$root.CheckPriv($root.Priv.SERVER_EDIT)"
@@ -34,6 +34,14 @@
                         icon="el-icon-ssh-key"
                         class="app-danger"
                         @click="openBindKeyDialogHandler(scope.row)">{{ $t('server_public_sshkey') }}</el-button> -->
+
+
+                        <el-button
+                        v-if="$root.CheckPriv($root.Priv.SERVER_EDIT)"
+                        icon="el-icon-warning"
+                        type="text"
+                        @click="openXtermDialogHandler(scope.row)"
+                        >{{ $t("command") }}</el-button>
 
                         <el-button
                         v-if="$root.CheckPriv($root.Priv.SERVER_DEL)"
@@ -57,16 +65,19 @@
 
         <ServerDialog @load-table-data="loadTableData"/>
 
+        <ServerXterm />
     </div>
 </template>
 
 <script>
 import { listServerApi } from '@/api/server'
 import ServerDialog from './ServerDialog.vue'
+import ServerXterm from './ServerXterm.vue'
 
 export default {
     components: {
-        ServerDialog
+        ServerDialog,
+        ServerXterm
     },
     data() {
         return {
@@ -80,6 +91,9 @@ export default {
         searchHandler() {
             this.$root.PageInit()
             this.loadTableData()
+        },
+        openXtermDialogHandler(row){
+            this.$root.EmitEventGlobal("openXtermDialogHandler", {group:this.group, server:row});
         },
         // openBindKeyAddDialogHandler(){
         //     this.$root.EmitEventGlobal("openBindKeyAddDialog", {});
