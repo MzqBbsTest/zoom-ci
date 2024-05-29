@@ -27,6 +27,7 @@ const (
 	SERVER_LIST         = "/server/list"
 	SERVER_DELETE       = "/server/delete"
 	SERVER_DETAIL       = "/server/detail"
+	SERVER_SSH_TEST     = "/server/ssh/test"
 
 	USER_ROLE_PRIV_LIST = "/user/role/privlist"
 	USER_ROLE_ADD       = "/user/role/add"

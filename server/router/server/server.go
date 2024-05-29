@@ -5,10 +5,12 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/zoom-ci/zoom-ci/server/module/server"
 	"github.com/zoom-ci/zoom-ci/server/render"
 	"github.com/zoom-ci/zoom-ci/util/gostring"
+	"golang.org/x/crypto/ssh"
 )
 
 type QueryBind struct {
@@ -125,4 +127,55 @@ func ServerDetail(c *gin.Context) {
 	}
 
 	render.JSON(c, ser)
+}
+
+func ServerSshTest(c *gin.Context) {
+	id := gostring.Str2Int(c.Query("id"))
+	if id == 0 {
+		render.ParamError(c, "id cannot be empty")
+		return
+	}
+	ser := &server.Server{
+		ID: id,
+	}
+	if err := ser.Detail(); err != nil {
+		render.AppError(c, err.Error())
+		return
+	}
+
+	config := &ssh.ClientConfig{
+		User: ser.User,
+		Auth: []ssh.AuthMethod{
+			ssh.Password(ser.Password),
+		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+	}
+
+	// 连接到服务器
+	client, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", ser.Ip, ser.SSHPort), config)
+	if err != nil {
+		//log.Fatalf("Failed to dial: %v", err)
+		render.AppError(c, err.Error())
+		return
+	}
+	defer client.Close()
+
+	// 创建一个新的会话
+	session, err := client.NewSession()
+	if err != nil {
+		//log.Fatalf("Failed to create session: %v", err)
+		render.AppError(c, err.Error())
+		return
+	}
+	defer session.Close()
+
+	// 运行命令
+	var b []byte
+	if b, err = session.CombinedOutput("uname -a"); err != nil {
+		//log.Fatalf("Failed to run: %v", err)
+		render.AppError(c, err.Error())
+		return
+	}
+	fmt.Println(b)
+	render.JSON(c, nil)
 }

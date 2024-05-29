@@ -29,7 +29,7 @@ export default {
             this.dialogVisible = true;
             Vue.nextTick(
                 function () {
-                    if (this.term) {
+                    if (this.term || !this.$refs.terminal) {
                         return;
                     }
                     const term = new Terminal();
@@ -45,7 +45,7 @@ export default {
 
                     this.term = term;
                     this.runFakeTerminal();
-
+                    
 
                     // 内容全屏显示-窗口大小发生改变时
                     function resizeScreen(size) {

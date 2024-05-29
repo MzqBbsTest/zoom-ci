@@ -28,12 +28,12 @@
                         type="text"
                         @click="openEditDialogHandler(scope.row)">{{ $t('edit') }}</el-button>
                         
-                        <!-- <el-button
-                        v-if="$root.CheckPriv($root.Priv.SERVER_PUBLIC_SSHKEY)"
+                        <el-button
+                        v-if="$root.CheckPriv($root.Priv.SERVER_EDIT)"
                         type="text"
                         icon="el-icon-ssh-key"
                         class="app-danger"
-                        @click="openBindKeyDialogHandler(scope.row)">{{ $t('server_public_sshkey') }}</el-button> -->
+                        @click="testConnect(scope.row)">{{ $t('server_connect') }}</el-button>
 
 
                         <el-button
@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { listServerApi } from '@/api/server'
+import { listServerApi, testServerConnect } from '@/api/server'
 import ServerDialog from './ServerDialog.vue'
 import ServerXterm from './ServerXterm.vue'
 
@@ -91,6 +91,14 @@ export default {
         searchHandler() {
             this.$root.PageInit()
             this.loadTableData()
+        },
+        testConnect(row){
+            testServerConnect({id: row.id}).then(res => {
+                this.$root.MessageSuccess()
+            }).catch(err => {
+                console.log(err)
+                // this.tableLoading = false
+            })
         },
         openXtermDialogHandler(row){
             this.$root.EmitEventGlobal("openXtermDialogHandler", {group:this.group, server:row});

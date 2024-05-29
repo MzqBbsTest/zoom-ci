@@ -348,5 +348,6 @@ export default {
     'add_sshkey': '创建密钥',
     'auth_key':'自动生成',
     'user_or_ssh': '用户或者公钥二选一，系统登录远程服务器使用',
-    'app_config_add':'配置文件添加'
+    'app_config_add':'配置文件添加',
+    'server_connect': '测试连接'
 }

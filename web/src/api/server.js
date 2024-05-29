@@ -196,3 +196,6 @@ export function detailServerSshkeyApi(data) {
     return get('/server/sshkey/detail', data)
 }
 
+export function testServerConnect(data){
+    return get('/server/ssh/test', data)
+}
