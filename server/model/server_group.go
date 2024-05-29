@@ -4,14 +4,10 @@
 
 package model
 
-import (
-	"time"
-)
-
 type ServerGroup struct {
-	ID    int    `gorm:"primary_key"`
-	Name  string `gorm:"type:varchar(100);not null;default:''"`
-	Ctime int    `gorm:"type:int(11);not null;default:0"`
+	ID       int `gorm:"primary_key"`
+	ServerId int `gorm:"type:int(11);not null;default:0"`
+	GroupId  int `gorm:"type:int(11);not null;default:0"`
 }
 
 func (m *ServerGroup) TableName() string {
@@ -19,7 +15,6 @@ func (m *ServerGroup) TableName() string {
 }
 
 func (m *ServerGroup) Create() bool {
-	m.Ctime = int(time.Now().Unix())
 	return Create(m)
 }
 

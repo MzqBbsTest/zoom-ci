@@ -45,7 +45,7 @@
             </el-pagination>
         </el-card>
 
-        <el-dialog :width="$root.DialogSmallWidth" :title="dialogTitle" :visible.sync="dialogVisible" @close="dialogCloseHandler">
+        <el-dialog :width="$root.DialogLargeWidth" :title="dialogTitle" :visible.sync="dialogVisible" @close="dialogCloseHandler">
             <div class="app-dialog" v-loading="dialogLoading">
                 <el-form ref="dialogRef" :model="dialogForm" size="medium" label-width="80px">
                     <el-form-item 
@@ -104,11 +104,11 @@ export default {
         },
         openAddDialogHandler() {
             this.dialogVisible = true
-            this.dialogTitle = this.$t('add_sshkey')
+            this.dialogTitle = this.$t('add')
         },
         openEditDialogHandler(row) {
             this.dialogVisible = true
-            this.dialogTitle = this.$t('edit_sshkey')
+            this.dialogTitle = this.$t('edit')
             this.dialogLoading = true
             detailSshkeyApi({id: row.id}).then(res => {
                 this.dialogLoading = false

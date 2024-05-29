@@ -19,6 +19,9 @@ type Server struct {
 	Name      string `json:"name"`
 	Ip        string `json:"ip"`
 	SSHPort   int    `json:"ssh_port"`
+	User      string `json:"user"`
+	Password  string `json:"password"`
+	SshKeyId  int    `json:"sshkey_id"`
 	Ctime     int    `json:"ctime"`
 }
 
@@ -52,11 +55,14 @@ func ServerGetListByGroupIds(groupIds []int) ([]Server, error) {
 
 func (s *Server) CreateOrUpdate() error {
 	server := &model.Server{
-		ID:      s.ID,
-		GroupId: s.GroupId,
-		Name:    s.Name,
-		Ip:      s.Ip,
-		SSHPort: s.SSHPort,
+		ID:       s.ID,
+		GroupId:  s.GroupId,
+		Name:     s.Name,
+		Ip:       s.Ip,
+		SSHPort:  s.SSHPort,
+		User:     s.User,
+		Password: s.Password,
+		SshKeyId: s.SshKeyId,
 	}
 	if server.ID == 0 {
 		if ok := server.Create(); !ok {
@@ -148,6 +154,9 @@ func (s *Server) Detail() error {
 	s.Ip = server.Ip
 	s.SSHPort = server.SSHPort
 	s.Ctime = server.Ctime
+	s.User = server.User
+	s.Password = server.Password
+	s.SshKeyId = server.SshKeyId
 
 	return nil
 }

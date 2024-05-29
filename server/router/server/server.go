@@ -18,10 +18,13 @@ type QueryBind struct {
 }
 
 type ServerForm struct {
-	GroupId int    `form:"group_id" default="0"`
-	Name    string `form:"name" binding:"required"`
-	Ip      string `form:"ip" binding:"required"`
-	SSHPort int    `form:"ssh_port" binding:"required,gte=1,lte=65535"`
+	GroupId  int    `form:"group_id" default="0"`
+	Name     string `form:"name" binding:"required"`
+	Ip       string `form:"ip" binding:"required"`
+	SSHPort  int    `form:"ssh_port" binding:"required,gte=1,lte=65535"`
+	User     string `form:"user" `
+	Password string `form:"password" `
+	SshKeyId int    `form:"sshkey_id"`
 }
 
 func ServerAdd(c *gin.Context) {
@@ -44,11 +47,14 @@ func serverCreateOrUpdate(c *gin.Context, id int) {
 		return
 	}
 	server := &server.Server{
-		ID:      id,
-		GroupId: serverForm.GroupId,
-		Name:    serverForm.Name,
-		Ip:      serverForm.Ip,
-		SSHPort: serverForm.SSHPort,
+		ID:       id,
+		GroupId:  serverForm.GroupId,
+		Name:     serverForm.Name,
+		Ip:       serverForm.Ip,
+		SSHPort:  serverForm.SSHPort,
+		User:     serverForm.User,
+		Password: serverForm.Password,
+		SshKeyId: serverForm.SshKeyId,
 	}
 	if err := server.CreateOrUpdate(); err != nil {
 		render.AppError(c, err.Error())

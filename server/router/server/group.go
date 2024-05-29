@@ -12,8 +12,9 @@ import (
 )
 
 type GroupForm struct {
-	ID   int    `form:"id"`
-	Name string `form:"name" binding:"required"`
+	ID      int    `form:"id"`
+	Name    string `form:"name" binding:"required"`
+	Servers []int  `form:"servers" `
 }
 
 func GroupAdd(c *gin.Context) {

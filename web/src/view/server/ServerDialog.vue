@@ -26,14 +26,32 @@
                     ]">
                     <el-input maxlength=5 class="app-input-mini" v-model="dialogForm.ssh_port" autocomplete="off"></el-input>
                 </el-form-item>
-            </el-form>
 
-            <el-form class="app-form" ref="dialogSshKeyRef" :model="dialogSshKeyForm" size="medium" label-width="120px" v-if="dialogName=='sshkey'">
+                <el-form-item 
+                    :label="$t('user')"
+                    prop="user"
+                    :rules="[
+                        
+                    ]">
+                    <el-input :placeholder="$t('user_or_ssh')" v-model="dialogForm.user" autocomplete="off"></el-input>
+                </el-form-item>
+
+
+                <el-form-item 
+                    :label="$t('password')"
+                    prop="password"
+                    :rules="[
+                        
+                    ]">
+                    <el-input type="password" v-model="dialogForm.password" autocomplete="off"></el-input>
+                </el-form-item>
+
+
                 <el-form-item 
                     :label="$t('server_public_sshkey')"
                     prop="sshkey_id"
                     :rules="[
-                        { required: true, message: this.$t('server_public_sshkey_empty'), trigger: 'blur'},
+
                     ]">
                     <el-select filterable :placeholder="$t('keyword_search')" style="width: 100%" v-model="dialogSshKeyForm.sshkey_id">
                         <el-option
@@ -46,6 +64,7 @@
                 </el-form-item>
             </el-form>
 
+          
             <div slot="footer" class="dialog-footer">
                 <el-button size="small" @click="dialogCloseHandler">{{ $t('cancel')}}</el-button>
                 <el-button :loading="btnLoading" size="small" type="primary" @click="dialogSubmitHandler">{{ $t('enter')}}</el-button>
@@ -79,33 +98,38 @@ export default {
     },
     methods: {
         
-        openBindKeyAddDialogHandler() {
-            this.dialogName = 'sshkey'
-            this.dialogVisible = true
-            this.dialogTitle = this.$t('add_server_sshkey_info')
-            this.dialogLoading = true
-            listSshkeyApi().then(res=>this.sshkeyList=res)
-        },
+        // openBindKeyAddDialogHandler() {
+        //     this.dialogName = 'sshkey'
+        //     this.dialogVisible = true
+        //     this.dialogTitle = this.$t('add_server_sshkey_info')
+        //     this.dialogLoading = true
+        //     listSshkeyApi().then(res=>this.sshkeyList=res)
+        // },
         
-        openBindKeyEditDialogHandler() {
-            listSshkeyApi().then(res=>this.sshkeyList=res)
-            this.dialogName = 'sshkey'
-            this.dialogVisible = true
-            this.dialogTitle = this.$t('edit_server_sshkey_info')
-            this.dialogLoading = true
-            detailServerSshkeyApi({id: row.id}).then(res => {
-                this.dialogLoading = false
-                this.dialogSshKeyForm = res
-            }).catch(err => {
-                this.dialogCloseHandler()
-            })
+        // openBindKeyEditDialogHandler() {
+        //     listSshkeyApi().then(res=>this.sshkeyList=res)
+        //     this.dialogName = 'sshkey'
+        //     this.dialogVisible = true
+        //     this.dialogTitle = this.$t('edit_server_sshkey_info')
+        //     this.dialogLoading = true
+        //     detailServerSshkeyApi({id: row.id}).then(res => {
+        //         this.dialogLoading = false
+        //         this.dialogSshKeyForm = res
+        //     }).catch(err => {
+        //         this.dialogCloseHandler()
+        //     })
+        // },
+        searchSshKey(){
+            listSshkeyApi().then(res=>this.sshkeyList=res.list)
         },
         openAddDialogHandler() {
+            this.searchSshKey()
             this.dialogName = 'server'
             this.dialogVisible = true
             this.dialogTitle = this.$t('add_server')
         },
         openEditDialogHandler(row) {
+            this.searchSshKey()
             this.dialogName = 'server'
             this.dialogVisible = true
             this.dialogTitle = this.$t('edit_server_info')
@@ -182,8 +206,8 @@ export default {
     mounted() {
         this.$root.BindEventGlobal("openServerAddDialog", this.openAddDialogHandler);
         this.$root.BindEventGlobal("openServerEditDialog", this.openEditDialogHandler);
-        this.$root.BindEventGlobal("openBindKeyAddDialog", this.openBindKeyAddDialogHandler);
-        this.$root.BindEventGlobal("openBindKeyEditDialog", this.openBindKeyEditDialogHandler);
+        // this.$root.BindEventGlobal("openBindKeyAddDialog", this.openBindKeyAddDialogHandler);
+        // this.$root.BindEventGlobal("openBindKeyEditDialog", this.openBindKeyEditDialogHandler);
     }
 }
 </script>

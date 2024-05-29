@@ -166,6 +166,9 @@ export function updateSshkeyApi(data) {
 }
 
 export function listSshkeyApi(params) {
+    if(!params){
+        params = {limit:20}
+    }
     return get('/sshkey/list', params)
 }
 

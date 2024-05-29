@@ -189,6 +189,7 @@ export default {
                 } else {
                     opFn = newGroupApi
                 }
+  
                 opFn(this.dialogForm).then(res => {
                     this.$root.MessageSuccess(() => {
                         this.dialogCloseHandler()

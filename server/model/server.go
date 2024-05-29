@@ -9,12 +9,15 @@ import (
 )
 
 type Server struct {
-	ID      int    `gorm:"primary_key"`
-	GroupId int    `gorm:"type:int(11);not null;default:0"`
-	Name    string `gorm:"type:varchar(100);not null;default:''"`
-	Ip      string `gorm:"type:varchar(100);not null;default:''"`
-	SSHPort int    `gorm:"type:int(11);not null;default:0"`
-	Ctime   int    `gorm:"type:int(11);not null;default:0"`
+	ID       int    `gorm:"primary_key"`
+	GroupId  int    `gorm:"type:int(11);not null;default:0"`
+	Name     string `gorm:"type:varchar(100);not null;default:''"`
+	Ip       string `gorm:"type:varchar(100);not null;default:''"`
+	SSHPort  int    `gorm:"type:int(11);not null;default:0"`
+	Ctime    int    `gorm:"type:int(11);not null;default:0"`
+	User     string `gorm:"type:varchar(50);not null;default:'';column:user"`
+	Password string `gorm:"type:varchar(50);not null;default:'';column:password"`
+	SshKeyId int    `gorm:"type:int(11);not null;default:0;column:sshkey_id"`
 }
 
 func (m *Server) TableName() string {

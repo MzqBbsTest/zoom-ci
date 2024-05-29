@@ -28,12 +28,12 @@
                         type="text"
                         @click="openEditDialogHandler(scope.row)">{{ $t('edit') }}</el-button>
                         
-                        <el-button
+                        <!-- <el-button
                         v-if="$root.CheckPriv($root.Priv.SERVER_PUBLIC_SSHKEY)"
                         type="text"
                         icon="el-icon-ssh-key"
                         class="app-danger"
-                        @click="openBindKeyDialogHandler(scope.row)">{{ $t('server_public_sshkey') }}</el-button>
+                        @click="openBindKeyDialogHandler(scope.row)">{{ $t('server_public_sshkey') }}</el-button> -->
 
                         <el-button
                         v-if="$root.CheckPriv($root.Priv.SERVER_DEL)"
@@ -81,12 +81,12 @@ export default {
             this.$root.PageInit()
             this.loadTableData()
         },
-        openBindKeyAddDialogHandler(){
-            this.$root.EmitEventGlobal("openBindKeyAddDialog", {});
-        },
-        openBindKeyEditDialogHandler(row){
-            this.$root.EmitEventGlobal("openBindKeyEditDialog", row);
-        },
+        // openBindKeyAddDialogHandler(){
+        //     this.$root.EmitEventGlobal("openBindKeyAddDialog", {});
+        // },
+        // openBindKeyEditDialogHandler(row){
+        //     this.$root.EmitEventGlobal("openBindKeyEditDialog", row);
+        // },
         openAddDialogHandler() {
             this.$root.EmitEventGlobal("openServerAddDialog", {});
         },

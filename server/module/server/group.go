@@ -13,16 +13,17 @@ import (
 )
 
 type Group struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Ctime int    `json:"ctime"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Ctime     int    `json:"ctime"`
+	ServerIds []int  `json:"server_ids"`
 }
 
 func GroupGetMapByIds(ids []int) (map[int]Group, error) {
 	if len(ids) == 0 {
 		return nil, nil
 	}
-	group := &model.ServerGroup{}
+	group := &model.Group{}
 	groupList, ok := group.List(model.QueryParam{
 		Where: []model.WhereParam{
 			model.WhereParam{
@@ -35,19 +36,41 @@ func GroupGetMapByIds(ids []int) (map[int]Group, error) {
 	if !ok {
 		return nil, errors.New("get server group list failed")
 	}
+	serverGroup := model.ServerGroup{}
+	serverGroupList, ok := serverGroup.List(model.QueryParam{
+		Where: []model.WhereParam{
+			model.WhereParam{
+				Field:   "server_id",
+				Tag:     "IN",
+				Prepare: ids,
+			},
+		},
+	})
+	if !ok {
+		return nil, errors.New("get server group list failed")
+	}
+
 	groupMap := make(map[int]Group)
 	for _, l := range groupList {
-		groupMap[l.ID] = Group{
-			ID:    l.ID,
-			Name:  l.Name,
-			Ctime: l.Ctime,
+		var serverIds []int
+		for _, server := range serverGroupList {
+			if l.ID == server.GroupId {
+				serverIds = append(serverIds, server.ServerId)
+			}
 		}
+		groupMap[l.ID] = Group{
+			ID:        l.ID,
+			Name:      l.Name,
+			Ctime:     l.Ctime,
+			ServerIds: serverIds,
+		}
+
 	}
 	return groupMap, nil
 }
 
 func (g *Group) Create() error {
-	serverGroup := model.ServerGroup{
+	serverGroup := model.Group{
 		Name: g.Name,
 	}
 	if ok := serverGroup.Create(); !ok {
@@ -57,7 +80,7 @@ func (g *Group) Create() error {
 }
 
 func (g *Group) Update() error {
-	serverGroup := model.ServerGroup{
+	serverGroup := model.Group{
 		ID:   g.ID,
 		Name: g.Name,
 	}
@@ -68,7 +91,7 @@ func (g *Group) Update() error {
 }
 
 func (g *Group) List(keyword string, offset, limit int) ([]Group, error) {
-	group := model.ServerGroup{}
+	group := model.Group{}
 	list, ok := group.List(model.QueryParam{
 		Fields: "id, name, ctime",
 		Offset: offset,
@@ -92,7 +115,7 @@ func (g *Group) List(keyword string, offset, limit int) ([]Group, error) {
 }
 
 func (g *Group) Total(keyword string) (int, error) {
-	group := model.ServerGroup{}
+	group := model.Group{}
 	total, ok := group.Count(model.QueryParam{
 		Where: g.parseWhereConds(keyword),
 	})
@@ -103,7 +126,7 @@ func (g *Group) Total(keyword string) (int, error) {
 }
 
 func (g *Group) Delete() error {
-	group := &model.ServerGroup{
+	group := &model.Group{
 		ID: g.ID,
 	}
 	if ok := group.Delete(); !ok {
@@ -113,7 +136,7 @@ func (g *Group) Delete() error {
 }
 
 func (g *Group) Detail() error {
-	group := model.ServerGroup{}
+	group := model.Group{}
 	if ok := group.Get(g.ID); !ok {
 		return errors.New("get server group detail failed")
 	}

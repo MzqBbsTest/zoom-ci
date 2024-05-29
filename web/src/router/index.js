@@ -40,82 +40,82 @@ const routerMap = [
             },
         ],
     },
-    {
-        path: '/deploy',
-        name: 'deploy',
-        component: _import('Layer'),
-        meta: {
-            title: i18n.t('deploy'),
-            icon: 'icon-send',
-        },
-        children: [
-            {
-                path: 'apply',
-                name: 'deployApply',
-                meta: {
-                    title: i18n.t('submit_deploy_apply'),
-                    role: [priv.DEPLOY_APPLY],
-                },
-                component: _import('deploy/Apply'),
-            },
-            {
-                path: 'deploy',
-                name: 'deployDeploy',
-                meta: {
-                    title: i18n.t('deploy_manage'),
-                    role: [priv.DEPLOY_VIEW],
-                },
-                component: _import('deploy/Deploy'),
-            },
-            {
-                path: 'release',
-                name: 'deployRelease',
-                meta: {
-                    title: i18n.t('deploying_deploy'),
-                    hide: true,
-                },
-                component: _import('deploy/Release'),
-            },
-        ],
-    },
-    {
-        path: '/project',
-        name: 'project',
-        component: _import('Layer'),
-        meta: {
-            title: i18n.t('project'),
-            icon: 'icon-project',
-        },
-        children: [
-            {
-                path: 'space',
-                name: 'projectSpace',
-                meta: {
-                    title: i18n.t('space_manage'),
-                    role: [priv.PROJECT_SPACE_VIEW],
-                },
-                component: _import('project/Space'),
-            },
-            {
-                path: 'project',
-                name: 'projectProject',
-                meta: {
-                    title: i18n.t('project_manage'),
-                    role: [priv.PROJECT_VIEW],
-                },
-                component: _import('project/Project'),
-            },
-            {
-                path: 'user',
-                name: 'projectUser',
-                meta: {
-                    title: i18n.t('member_manage'),
-                    role: [priv.PROJECT_USER_VIEW],
-                },
-                component: _import('project/Member'),
-            },
-        ],
-    },
+    // {
+    //     path: '/deploy',
+    //     name: 'deploy',
+    //     component: _import('Layer'),
+    //     meta: {
+    //         title: i18n.t('deploy'),
+    //         icon: 'icon-send',
+    //     },
+    //     children: [
+    //         {
+    //             path: 'apply',
+    //             name: 'deployApply',
+    //             meta: {
+    //                 title: i18n.t('submit_deploy_apply'),
+    //                 role: [priv.DEPLOY_APPLY],
+    //             },
+    //             component: _import('deploy/Apply'),
+    //         },
+    //         {
+    //             path: 'deploy',
+    //             name: 'deployDeploy',
+    //             meta: {
+    //                 title: i18n.t('deploy_manage'),
+    //                 role: [priv.DEPLOY_VIEW],
+    //             },
+    //             component: _import('deploy/Deploy'),
+    //         },
+    //         {
+    //             path: 'release',
+    //             name: 'deployRelease',
+    //             meta: {
+    //                 title: i18n.t('deploying_deploy'),
+    //                 hide: true,
+    //             },
+    //             component: _import('deploy/Release'),
+    //         },
+    //     ],
+    // },
+    // {
+    //     path: '/project',
+    //     name: 'project',
+    //     component: _import('Layer'),
+    //     meta: {
+    //         title: i18n.t('project'),
+    //         icon: 'icon-project',
+    //     },
+    //     children: [
+    //         {
+    //             path: 'space',
+    //             name: 'projectSpace',
+    //             meta: {
+    //                 title: i18n.t('space_manage'),
+    //                 role: [priv.PROJECT_SPACE_VIEW],
+    //             },
+    //             component: _import('project/Space'),
+    //         },
+    //         {
+    //             path: 'project',
+    //             name: 'projectProject',
+    //             meta: {
+    //                 title: i18n.t('project_manage'),
+    //                 role: [priv.PROJECT_VIEW],
+    //             },
+    //             component: _import('project/Project'),
+    //         },
+    //         {
+    //             path: 'user',
+    //             name: 'projectUser',
+    //             meta: {
+    //                 title: i18n.t('member_manage'),
+    //                 role: [priv.PROJECT_USER_VIEW],
+    //             },
+    //             component: _import('project/Member'),
+    //         },
+    //     ],
+    // },
     {
         path: '/user',
         name: 'user',
