@@ -7,7 +7,6 @@ package server
 import (
 	"errors"
 	"fmt"
-
 	"github.com/zoom-ci/zoom-ci/server/model"
 	"github.com/zoom-ci/zoom-ci/util/gois"
 )
@@ -19,7 +18,7 @@ type Group struct {
 	ServerIds []int  `json:"server_ids"`
 }
 
-func GroupGetMapByIds(ids []int) (map[int]Group, error) {
+func (g *Group) GroupGetMapByIds(ids []int) (map[int]Group, error) {
 	if len(ids) == 0 {
 		return nil, nil
 	}
@@ -36,17 +35,9 @@ func GroupGetMapByIds(ids []int) (map[int]Group, error) {
 	if !ok {
 		return nil, errors.New("get server group list failed")
 	}
-	serverGroup := model.ServerGroup{}
-	serverGroupList, ok := serverGroup.List(model.QueryParam{
-		Where: []model.WhereParam{
-			model.WhereParam{
-				Field:   "server_id",
-				Tag:     "IN",
-				Prepare: ids,
-			},
-		},
-	})
-	if !ok {
+
+	serverGroupList, err := g.GetGroupServers(ids)
+	if err != nil {
 		return nil, errors.New("get server group list failed")
 	}
 
@@ -90,6 +81,23 @@ func (g *Group) Update() error {
 	return nil
 }
 
+func (g *Group) GetGroupServers(ids []int) ([]model.ServerGroup, error) {
+	serverGroup := model.ServerGroup{}
+	serverGroupList, ok := serverGroup.List(model.QueryParam{
+		Where: []model.WhereParam{
+			model.WhereParam{
+				Field:   "server_id",
+				Tag:     "IN",
+				Prepare: ids,
+			},
+		},
+	})
+	if !ok {
+		return nil, errors.New("get server group list failed")
+	}
+	return serverGroupList, nil
+}
+
 func (g *Group) List(keyword string, offset, limit int) ([]Group, error) {
 	group := model.Group{}
 	list, ok := group.List(model.QueryParam{
@@ -103,12 +111,28 @@ func (g *Group) List(keyword string, offset, limit int) ([]Group, error) {
 		return nil, errors.New("get server group list failed")
 	}
 
+	var ids []int
+	for _, group := range list {
+		ids = append(ids, group.ID)
+	}
+	serverGroupList, err := g.GetGroupServers(ids)
+	if err != nil {
+		return nil, errors.New("get server group list failed")
+	}
+
 	var groupList []Group
 	for _, l := range list {
+		var serverIds []int
+		for _, server := range serverGroupList {
+			if l.ID == server.GroupId {
+				serverIds = append(serverIds, server.ServerId)
+			}
+		}
 		groupList = append(groupList, Group{
-			ID:    l.ID,
-			Name:  l.Name,
-			Ctime: l.Ctime,
+			ID:        l.ID,
+			Name:      l.Name,
+			Ctime:     l.Ctime,
+			ServerIds: serverIds,
 		})
 	}
 	return groupList, nil
@@ -147,6 +171,14 @@ func (g *Group) Detail() error {
 	g.ID = group.ID
 	g.Name = group.Name
 	g.Ctime = group.Ctime
+	serverGroupList, err := g.GetGroupServers([]int{g.ID})
+	if err != nil {
+		return errors.New("get server group list failed")
+	}
+
+	if len(serverGroupList) > 0 {
+		g.ServerIds = []int{serverGroupList[0].ServerId}
+	}
 
 	return nil
 }

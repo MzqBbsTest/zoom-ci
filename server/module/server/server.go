@@ -104,8 +104,8 @@ func (s *Server) List(keyword string, offset, limit int) ([]Server, error) {
 		})
 		groupIds = append(groupIds, l.GroupId)
 	}
-
-	groupMap, err := GroupGetMapByIds(groupIds)
+	var g Group
+	groupMap, err := g.GroupGetMapByIds(groupIds)
 	if err != nil {
 		return nil, errors.New("get server group map failed")
 	}

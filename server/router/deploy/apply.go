@@ -524,8 +524,9 @@ func ApplyProjectDetail(c *gin.Context) {
 	var err error
 	var clusterList map[int]server.Group
 	var serverList []server.Server
+	var g server.Group
 	if proj.ProjectType == 1 {
-		clusterList, err = server.GroupGetMapByIds(proj.OnlineCluster)
+		clusterList, err = g.GroupGetMapByIds(proj.OnlineCluster)
 		if err != nil {
 			render.AppError(c, err.Error())
 			return
