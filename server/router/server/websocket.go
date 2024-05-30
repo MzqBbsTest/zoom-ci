@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/zoom-ci/zoom-ci/server/module/server"
-	"github.com/zoom-ci/zoom-ci/server/render"
 	"github.com/zoom-ci/zoom-ci/util/gostring"
 	"golang.org/x/crypto/ssh"
 	"log"
@@ -29,14 +28,14 @@ func WebSocket(c *gin.Context) {
 	defer conn.Close()
 	id := gostring.Str2Int(c.Query("id"))
 	if id == 0 {
-		render.ParamError(c, "id cannot be empty")
+		conn.WriteMessage(websocket.TextMessage, []byte("id cannot be empty"))
 		return
 	}
 	ser := &server.Server{
 		ID: id,
 	}
 	if err := ser.Detail(); err != nil {
-		render.AppError(c, err.Error())
+		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		return
 	}
 
@@ -53,7 +52,7 @@ func WebSocket(c *gin.Context) {
 	client, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", ser.Ip, ser.SSHPort), config)
 	if err != nil {
 		//log.Fatalf("Failed to dial: %v", err)
-		render.AppError(c, err.Error())
+		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		return
 	}
 	defer client.Close()
@@ -62,7 +61,7 @@ func WebSocket(c *gin.Context) {
 	session, err := client.NewSession()
 	if err != nil {
 		//log.Fatalf("Failed to create session: %v", err)
-		render.AppError(c, err.Error())
+		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		return
 	}
 	defer session.Close()
@@ -71,19 +70,19 @@ func WebSocket(c *gin.Context) {
 	sessionStdIn, err := session.StdinPipe()
 	if err != nil {
 		//log.Fatalf("Failed to get session stdin: %v", err)
-		render.AppError(c, err.Error())
+		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		return
 	}
 	sessionStdOut, err := session.StdoutPipe()
 	if err != nil {
 		//log.Fatalf("Failed to get session stdout: %v", err)
-		render.AppError(c, err.Error())
+		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		return
 	}
 	sessionStdErr, err := session.StderrPipe()
 	if err != nil {
 		//log.Fatalf("Failed to get session stderr: %v", err)
-		render.AppError(c, err.Error())
+		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		return
 	}
 
@@ -93,7 +92,7 @@ func WebSocket(c *gin.Context) {
 	})
 	if err != nil {
 		//log.Fatalf("Failed to request pty: %v", err)
-		render.AppError(c, err.Error())
+		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		return
 	}
 
@@ -101,7 +100,7 @@ func WebSocket(c *gin.Context) {
 	err = session.Shell()
 	if err != nil {
 		//log.Fatalf("Failed to start shell: %v", err)
-		render.AppError(c, err.Error())
+		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		return
 	}
 
