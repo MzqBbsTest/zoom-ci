@@ -26,7 +26,7 @@ export default {
         };
     },
     methods: {
-        openXtermDialogHandler() {
+        openXtermDialogHandler(params) {
             this.dialogVisible = true;
             Vue.nextTick(
                 function () {
@@ -48,13 +48,13 @@ export default {
                     this.term = term;
                     this.runFakeTerminal();
                     
-                    this.socket = new WebSocket('ws://localhost:7002/api/ws');
+                    this.socket = new WebSocket('ws://localhost:7002/api/ws?id=');
                     this.socket.onopen = function() {
                         term.write('Connected to server\\r\\n');
                     };
 
                     this.socket.onerror = function(err) {
-                        console.log(err)
+                        console.log("连接错误", err)
                     };
 
                     this.socket.onmessage = function(event) {
@@ -91,8 +91,10 @@ export default {
             this.dialogVisible = false;
             this.dialogLoading = false;
             this.btnLoading = false;
-            this.socket &&  this.socket.close();
-            this.socket = null
+            if(this.socket){
+                this.socket.close();
+                this.socket = null
+            }
         },
 
         runFakeTerminal() {
