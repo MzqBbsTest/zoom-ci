@@ -48,9 +48,9 @@ export default {
                     this.term = term;
                     this.runFakeTerminal();
                     
-                    this.socket = new WebSocket('ws://localhost:7002/api/ws?id=');
+                    this.socket = new WebSocket('ws://localhost:7002/api/ws?id=2');
                     this.socket.onopen = function() {
-                        term.write('Connected to server\\r\\n');
+                        term.writeln('Connected to server');
                     };
 
                     this.socket.onerror = function(err) {
@@ -118,6 +118,12 @@ export default {
                     term.prompt();
                     console.log("回车，发送命令", _this.command)
                     _this.command = "";
+                } else if (ev.keyCode === 38) {
+                    // Up arrow key (previous history)
+                    
+                } else if (ev.keyCode === 40) {
+                    // Down arrow key (next history)
+                    
                 } else if (e.domEvent.keyCode === 8) {
                     // back 删除的情况
                     if (term._core.buffer.x > 2) {
