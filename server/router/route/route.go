@@ -48,6 +48,7 @@ func RegisterRoute() {
 		api.POST(reqApi.SERVER_DELETE, server.ServerDelete)
 		api.GET(reqApi.SERVER_DETAIL, server.ServerDetail)
 		api.GET(reqApi.SERVER_SSH_TEST, server.ServerSshTest)
+		api.GET(reqApi.SERVER_SESSION, server.CreateSession)
 
 		api.GET(reqApi.USER_ROLE_PRIV_LIST, user.RolePrivList)
 		api.POST(reqApi.USER_ROLE_ADD, user.RoleAdd)

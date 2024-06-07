@@ -5,34 +5,17 @@ import (
 	"io"
 )
 
-type clientSession struct {
+type ClientSession struct {
 	serverId  int // 服务器id
 	sessionId int // m.serMap[id].session下标 用来寻址 m.serMap[id].session
 	session   *ssh.Session
 	stdin     io.WriteCloser
 	stdout    io.Reader
 	stderr    io.Reader
-	err       error
-	resp      map[string]interface{}
-	sendChan  chan []byte
 }
 
-func (s *clientSession) error() error {
-	return s.err
-}
-
-func (s *clientSession) result() interface{} {
-
-	return nil
-}
-
-func (s *clientSession) login(id int) error {
+func (s *ClientSession) login(id int) error {
 	if s.session != nil {
-		s.err = nil
-		s.resp = map[string]interface{}{
-			"server_id":  s.serverId,
-			"session_id": s.sessionId,
-		}
 		return nil
 	}
 
@@ -77,12 +60,6 @@ func (s *clientSession) login(id int) error {
 		return err
 	}
 
-	s.err = nil
-	s.resp = map[string]interface{}{
-		"server_id":  s.serverId,
-		"session_id": s.sessionId,
-	}
-
 	//从 SSH 读取数据并发送到 WebSocket
 	go func() {
 		buf := make([]byte, 1024)
@@ -91,26 +68,27 @@ func (s *clientSession) login(id int) error {
 			if err != nil {
 				break
 			}
-			s.sendChan <- buf[:n]
-			//conn.WriteMessage(websocket.TextMessage, buf[:n])
-		}
-	}()
-	go func() {
-		buf := make([]byte, 1024)
-		for {
-			n, err := sessionStdErr.Read(buf)
+			sshChan <- MessageSsh{
+				msg:       buf[:n],
+				serClient: s,
+			}
+
+			n, err = sessionStdErr.Read(buf)
 			if err != nil {
 				break
 			}
-			s.sendChan <- buf[:n]
-			//conn.WriteMessage(websocket.TextMessage, buf[:n])
+			sshChan <- MessageSsh{
+				msg:       buf[:n],
+				serClient: s,
+			}
+
 		}
 	}()
 
 	return nil
 }
 
-func (s *clientSession) write(message *[]byte) error {
+func (s *ClientSession) write(message *[]byte) error {
 	_, err := s.stdin.Write(*message)
 	return err
 }

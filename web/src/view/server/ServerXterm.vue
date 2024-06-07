@@ -15,6 +15,7 @@ import { FitAddon } from "xterm-addon-fit";
 import { AttachAddon } from "xterm-addon-attach";
 import "xterm/css/xterm.css";
 import Vue from "vue";
+const fitAddon = new FitAddon();
 export default {
     data() {
         return {
@@ -33,6 +34,7 @@ export default {
                 function () {
                     let _this = this
                     if (this.term || !this.$refs.terminal) {
+                        fitAddon.fit()
                         return;
                     }
                     const term = new Terminal();
@@ -42,7 +44,7 @@ export default {
                     };
                     term.prompt();
                     term.open(this.$refs.terminal);
-                    const fitAddon = new FitAddon();
+                    
                     term.loadAddon(fitAddon);
                     fitAddon.fit()
 
