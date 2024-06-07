@@ -13,7 +13,7 @@ type Manage struct {
 
 func (m *Manage) generateSerClient(id, session int) (*clientSession, error) {
 	if m.serMap[id] != nil {
-		return m.generateSession(id, session), nil
+		return m.generateSession(id, session)
 	}
 
 	ser := &server.Server{
@@ -23,7 +23,8 @@ func (m *Manage) generateSerClient(id, session int) (*clientSession, error) {
 		return nil, err
 	}
 	m.serMap[id] = &client{
-		ser: ser,
+		ser:     ser,
+		session: map[int]*clientSession{},
 	}
 
 	if err := ser.Detail(); err != nil {
@@ -36,7 +37,7 @@ func (m *Manage) generateSerClient(id, session int) (*clientSession, error) {
 		}
 	}
 
-	return m.generateSession(id, session), nil
+	return m.generateSession(id, session)
 }
 
 // 創建一個
@@ -49,22 +50,31 @@ func (m *Manage) createNewSessionId(id int) int {
 	return index
 }
 
-func (m *Manage) generateSession(id int, sessionId int) *clientSession {
+func (m *Manage) generateSession(id int, sessionId int) (*clientSession, error) {
 	if sessionId == 0 {
+		session, err := m.serMap[id].client.NewSession()
+		if err != nil {
+			return nil, err
+		}
 		c := &clientSession{
 			serverId:  id,
 			sessionId: m.createNewSessionId(id),
+			session:   session,
 		}
-		return c
+
+		sessionId = c.sessionId
+		m.serMap[id].session[sessionId] = c
 	}
 	c := m.serMap[id].session[sessionId]
-	return c
+	c.resp = nil
+	c.err = nil
+	return c, nil
 }
 
 type client struct {
 	ser     *server.Server
 	client  *ssh.Client
-	session []*clientSession
+	session map[int]*clientSession
 	err     error
 }
 

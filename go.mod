@@ -44,4 +44,5 @@ require (
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/gorm v1.25.10 // indirect
+	nhooyr.io/websocket v1.8.11 // indirect
 )
