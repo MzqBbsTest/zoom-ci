@@ -62,7 +62,7 @@ func (s *clientSession) login(id int) error {
 	s.stdout = sessionStdErr
 
 	// 启动伪终端
-	err = session.RequestPty("xterm", 80, 24, ssh.TerminalModes{
+	err = session.RequestPty("xterm", 48, 95, ssh.TerminalModes{
 		//ssh.ECHO: 0, // 关闭回显
 	})
 	if err != nil {
