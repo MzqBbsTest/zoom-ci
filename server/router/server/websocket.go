@@ -2,12 +2,10 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
-	"reflect"
 	"sync"
 )
 
@@ -61,8 +59,9 @@ func WebSocket(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	sendChan := make(chan interface{})
+	manage.generateSerClient(2, 0)
 
+	sendChan := make(chan []byte)
 	go func() {
 		defer w.Done()
 		for {
@@ -71,7 +70,7 @@ func WebSocket(c *gin.Context) {
 				break
 			}
 			// 返回结果
-			conn.WriteMessage(websocket.TextMessage, respOk(0, msg))
+			conn.WriteMessage(websocket.TextMessage, msg)
 		}
 	}()
 
@@ -81,43 +80,46 @@ func WebSocket(c *gin.Context) {
 		for {
 			_, message, err := conn.ReadMessage()
 			if err != nil {
+				sendChan <- []byte(err.Error())
 				//conn.WriteMessage(websocket.TextMessage, respError(-1, err))
 				break
 			}
 
 			// 解包
-			msg := requestXterm{}
-			json.Unmarshal(message, &msg)
+			//msg := requestXterm{}
+			//json.Unmarshal(message, &msg)
 
 			// 创建客户端
-			serClient, err := manage.generateSerClient(msg.id, msg.session)
+			serClient, err := manage.generateSerClient(2, 1)
 			if err != nil {
-				conn.WriteMessage(websocket.TextMessage, respError(-1, err))
-				return
+				sendChan <- []byte(err.Error())
+				//conn.WriteMessage(websocket.TextMessage, respError(-1, err))
+				break
 			}
 			serClient.sendChan = sendChan
-
+			err = serClient.write(&message)
+			if err != nil {
+				sendChan <- []byte(err.Error())
+				//conn.WriteMessage(websocket.TextMessage, respError(-1, err))
+				break
+			}
 			// 执行业务逻辑
-			method := reflect.ValueOf(serClient).MethodByName(msg.action)
-			if !method.IsValid() {
-				conn.WriteMessage(websocket.TextMessage, respError(-1, fmt.Errorf("method not found: %s", msg.action)))
-				return
-			}
-			inputs := make([]reflect.Value, 1)
-			inputs[0] = reflect.ValueOf(msg.data)
-			method.Call(inputs)
-			if serClient.error() != nil {
-				conn.WriteMessage(websocket.TextMessage, respError(-1, serClient.error()))
-				return
-			}
+			//method := reflect.ValueOf(serClient).MethodByName(msg.action)
+			//if !method.IsValid() {
+			//	conn.WriteMessage(websocket.TextMessage, respError(-1, fmt.Errorf("method not found: %s", msg.action)))
+			//	return
+			//}
+			//inputs := make([]reflect.Value, 1)
+			//inputs[0] = reflect.ValueOf(msg.data)
+			//method.Call(inputs)
+			//if serClient.error() != nil {
+			//	conn.WriteMessage(websocket.TextMessage, respError(-1, serClient.error()))
+			//	return
+			//}
 
-			// 写入
-			result := serClient.result()
-			if result != nil {
-				sendChan <- result
-			}
 		}
 	}()
+
 	w.Add(2)
 	w.Wait()
 

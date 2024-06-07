@@ -14,7 +14,7 @@ type clientSession struct {
 	stderr    io.Reader
 	err       error
 	resp      map[string]interface{}
-	sendChan  chan interface{}
+	sendChan  chan []byte
 }
 
 func (s *clientSession) error() error {
@@ -63,7 +63,7 @@ func (s *clientSession) login(id int) error {
 
 	// 启动伪终端
 	err = session.RequestPty("xterm", 80, 24, ssh.TerminalModes{
-		ssh.ECHO: 0, // 关闭回显
+		//ssh.ECHO: 0, // 关闭回显
 	})
 	if err != nil {
 		//log.Fatalf("Failed to request pty: %v", err)
@@ -108,4 +108,9 @@ func (s *clientSession) login(id int) error {
 	}()
 
 	return nil
+}
+
+func (s *clientSession) write(message *[]byte) error {
+	_, err := s.stdin.Write(*message)
+	return err
 }

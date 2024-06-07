@@ -12,6 +12,7 @@ import { } from "@/api/server";
 
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
+import { AttachAddon } from "xterm-addon-attach";
 import "xterm/css/xterm.css";
 import Vue from "vue";
 export default {
@@ -46,26 +47,15 @@ export default {
                     fitAddon.fit()
 
                     this.term = term;
-                    this.runFakeTerminal();
+
                     
                     this.socket = new WebSocket('ws://localhost:7002/api/ws?id=2');
                     this.socket.onopen = function() {
                         term.writeln('Connected to server');
                     };
 
-                    this.socket.onerror = function(err) {
-                        console.log("连接错误", err)
-                    };
-
-                    this.socket.onmessage = function(event) {
-                        console.log("onmessage", event.data)
-                        term.write(event.data);
-                    };
-
-                    term.onData(function(data) {
-                        console.log("onData", data)
-                        _this.socket.send(data);
-                    });
+                 
+                    term.loadAddon(new AttachAddon(_this.socket));
 
                     
                     // 内容全屏显示-窗口大小发生改变时
@@ -118,10 +108,10 @@ export default {
                     term.prompt();
                     console.log("回车，发送命令", _this.command)
                     _this.command = "";
-                } else if (ev.keyCode === 38) {
+                } else if (e.domEvent.keyCode === 38) {
                     // Up arrow key (previous history)
                     
-                } else if (ev.keyCode === 40) {
+                } else if (e.domEvent.keyCode === 40) {
                     // Down arrow key (next history)
                     
                 } else if (e.domEvent.keyCode === 8) {

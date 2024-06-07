@@ -25,6 +25,7 @@ func (m *Manage) generateSerClient(id, session int) (*clientSession, error) {
 	m.serMap[id] = &client{
 		ser: ser,
 	}
+	m.serMap[id].session = map[int]*clientSession{}
 
 	if err := ser.Detail(); err != nil {
 		return nil, err
@@ -55,16 +56,18 @@ func (m *Manage) generateSession(id int, sessionId int) *clientSession {
 			serverId:  id,
 			sessionId: m.createNewSessionId(id),
 		}
+		m.serMap[id].session[c.sessionId] = c
 		return c
 	}
 	c := m.serMap[id].session[sessionId]
+	c.login(id)
 	return c
 }
 
 type client struct {
 	ser     *server.Server
 	client  *ssh.Client
-	session []*clientSession
+	session map[int]*clientSession
 	err     error
 }
 
