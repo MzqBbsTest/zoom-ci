@@ -19,6 +19,8 @@ var upgrader = websocket.Upgrader{
 type WebSocketQueryBind struct {
 	Id        int `form:"id"`
 	SessionId int `form:"session_id"`
+	W         int `form:"w"`
+	H         int `form:"h"`
 }
 
 func WebSocket(c *gin.Context) {
@@ -47,7 +49,7 @@ func WebSocket(c *gin.Context) {
 		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		return
 	}
-
+	serClient.WindowChange(query.W, query.H)
 	serClient.setCoon(conn)
 	connList = append(connList, &MessageConn{
 		w:         &w,

@@ -47,7 +47,7 @@ func (s *ClientSession) login(id int) error {
 	s.stdout = sessionStdErr
 
 	// 启动伪终端
-	err = session.RequestPty("xterm", 48, 95, ssh.TerminalModes{
+	err = session.RequestPty("xterm", 80, 24, ssh.TerminalModes{
 		//ssh.ECHO: 0, // 关闭回显
 	})
 	if err != nil {
@@ -91,4 +91,8 @@ func (s *ClientSession) write(message *[]byte) error {
 
 func (s *ClientSession) setCoon(conn *websocket.Conn) {
 	s.conn = conn
+}
+
+func (s *ClientSession) WindowChange(w, h int) error {
+	return s.session.WindowChange(h, w)
 }
