@@ -20,3 +20,4 @@ output
 # config file
 zoom.ini
 bin/model
+/web/node_modules2/
