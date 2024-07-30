@@ -39,8 +39,8 @@ func init() {
 				// 讀取消息
 				_, message, err := connMessage.conn.ReadMessage()
 				if err != nil {
-					connList[i] = nil
 					connMessage.w.Done()
+					connList[i] = nil
 					continue
 				}
 
@@ -60,9 +60,12 @@ func init() {
 		for {
 			select {
 			case message := <-sshChan:
-				println(message)
+				err := message.serClient.write(&message.msg)
+				if err != nil {
+					println("error", message.msg)
+				}
 			default:
-				println("write")
+				//println("write")
 			}
 		}
 	}()

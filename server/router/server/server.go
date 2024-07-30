@@ -176,6 +176,6 @@ func ServerSshTest(c *gin.Context) {
 		render.AppError(c, err.Error())
 		return
 	}
-	fmt.Println(b)
+	fmt.Println(string(b))
 	render.JSON(c, nil)
 }

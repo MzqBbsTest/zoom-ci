@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/gorilla/websocket"
 	"golang.org/x/crypto/ssh"
 	"io"
 )
@@ -12,6 +13,7 @@ type ClientSession struct {
 	stdin     io.WriteCloser
 	stdout    io.Reader
 	stderr    io.Reader
+	conn      *websocket.Conn
 }
 
 func (s *ClientSession) login(id int) error {
@@ -91,4 +93,8 @@ func (s *ClientSession) login(id int) error {
 func (s *ClientSession) write(message *[]byte) error {
 	_, err := s.stdin.Write(*message)
 	return err
+}
+
+func (s *ClientSession) setCoon(conn *websocket.Conn) {
+	s.conn = conn
 }

@@ -48,23 +48,30 @@ func WebSocket(c *gin.Context) {
 		return
 	}
 
-	// 从 WebSocket 读取数据并发送到 SSH
-	go func() {
-		defer w.Done()
-		for {
-			_, message, err := conn.ReadMessage()
-			if err != nil {
-				conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-				break
-			}
+	serClient.setCoon(conn)
+	connList = append(connList, &MessageConn{
+		w:         &w,
+		serClient: serClient,
+		conn:      conn,
+	})
 
-			err = serClient.write(&message)
-			if err != nil {
-				conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-				break
-			}
-		}
-	}()
+	//// 从 WebSocket 读取数据并发送到 SSH
+	//go func() {
+	//	defer w.Done()
+	//	for {
+	//		_, message, err := conn.ReadMessage()
+	//		if err != nil {
+	//			conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+	//			break
+	//		}
+	//
+	//		err = serClient.write(&message)
+	//		if err != nil {
+	//			conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
+	//			break
+	//		}
+	//	}
+	//}()
 
 	w.Add(1)
 	w.Wait()

@@ -19,17 +19,15 @@ func (m *Manage) generateSerClient(id, session int) (*ClientSession, error) {
 	ser := &server.Server{
 		ID: id,
 	}
-	if err := ser.Detail(); err != nil {
-		return nil, err
-	}
-	m.serMap[id] = &client{
-		ser: ser,
-	}
-	m.serMap[id].session = map[int]*ClientSession{}
 
 	if err := ser.Detail(); err != nil {
 		return nil, err
 	}
+
+	m.serMap[id] = &client{
+		ser: ser,
+	}
+	m.serMap[id].session = map[int]*ClientSession{}
 
 	if m.serMap[id].isLogin() == false {
 		if err := m.serMap[id].dial(); err != nil {
