@@ -65,25 +65,19 @@ func (s *ClientSession) login(id int) error {
 	//从 SSH 读取数据并发送到 WebSocket
 	go func() {
 		buf := make([]byte, 1024)
+		reader := io.MultiReader(sessionStdOut, sessionStdErr)
 		for {
-			n, err := sessionStdOut.Read(buf)
+			n, err := reader.Read(buf)
 			if err != nil {
-				break
+				if err == io.EOF {
+					break
+				}
+				continue
 			}
 			sshChan <- MessageSsh{
 				msg:       buf[:n],
 				serClient: s,
 			}
-
-			n, err = sessionStdErr.Read(buf)
-			if err != nil {
-				break
-			}
-			sshChan <- MessageSsh{
-				msg:       buf[:n],
-				serClient: s,
-			}
-
 		}
 	}()
 

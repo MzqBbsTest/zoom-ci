@@ -28,7 +28,7 @@ func CreateSession(c *gin.Context) {
 		}
 	}
 
-	_, err = manage.generateSerClient(id, sessionId)
+	session, err := manage.generateSerClient(id, sessionId)
 	if err != nil {
 		render.ParamError(c, err.Error())
 		return
@@ -36,6 +36,6 @@ func CreateSession(c *gin.Context) {
 
 	render.JSON(c, map[string]interface{}{
 		"server_id":  id,
-		"session_id": sessionId,
+		"session_id": session.sessionId,
 	})
 }

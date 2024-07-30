@@ -27,7 +27,7 @@ func init() {
 	manage = Manage{
 		serMap: map[int]*client{},
 	}
-	sshChan := make(chan MessageSsh, 1000)
+	sshChan = make(chan MessageSsh, 1000)
 
 	go func() {
 		for {
@@ -60,13 +60,15 @@ func init() {
 		for {
 			select {
 			case message := <-sshChan:
-				err := message.serClient.write(&message.msg)
+				println(string(message.msg))
+				err := message.serClient.conn.WriteMessage(websocket.TextMessage, message.msg)
 				if err != nil {
 					println("error", message.msg)
 				}
 			default:
 				//println("write")
 			}
+			time.Sleep(100)
 		}
 	}()
 

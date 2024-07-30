@@ -199,3 +199,8 @@ export function detailServerSshkeyApi(data) {
 export function testServerConnect(data){
     return get('/server/ssh/test', data)
 }
+
+export function serverSession(data){
+    // return post('http://localhost:8899/api/ssh/create_session', {"id":1,"name":"130","address":"192.168.1.130","user":"root","auth_type":"pwd","net_type":"tcp4","cert_data":"","cert_pwd":"","pwd":"Aa123456","port":22,"background":"#000000","foreground":"#FFFFFF","cursor_color":"#FFFFFF","font_family":"Courier","font_size":16,"cursor_style":"block","shell":"bash","pty_type":"xterm-256color","init_cmd":"","init_banner":""})
+    return get('/server/session', data)
+}
