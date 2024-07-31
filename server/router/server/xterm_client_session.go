@@ -64,7 +64,7 @@ func (s *ClientSession) login(id int) error {
 
 	//从 SSH 读取数据并发送到 WebSocket
 	go func() {
-		buf := make([]byte, 1024)
+		buf := make([]byte, 4096)
 		reader := io.MultiReader(sessionStdOut, sessionStdErr)
 		for {
 			n, err := reader.Read(buf)

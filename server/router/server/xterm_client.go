@@ -49,7 +49,7 @@ func (m *Manage) createNewSessionId(id int) int {
 }
 
 func (m *Manage) generateSession(id int, sessionId int) *ClientSession {
-	if sessionId == 0 {
+	if sessionId == 0 || m.serMap[id].session[sessionId] == nil {
 		c := &ClientSession{
 			serverId:  id,
 			sessionId: m.createNewSessionId(id),

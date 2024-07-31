@@ -19,7 +19,7 @@ func CreateSession(c *gin.Context) {
 	}
 
 	sessionId := 0
-	query, ok = c.GetQuery("sessionId")
+	query, ok = c.GetQuery("session_id")
 	if ok {
 		sessionId, err = strconv.Atoi(query)
 		if err != nil {

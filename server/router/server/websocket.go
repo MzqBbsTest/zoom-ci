@@ -39,7 +39,7 @@ func WebSocket(c *gin.Context) {
 
 	defer func() {
 		if manage.serMap[query.Id].session != nil {
-			manage.serMap[query.Id].session[query.SessionId] = nil
+			manage.serMap[query.Id].session[query.SessionId].conn = nil
 		}
 	}()
 
@@ -49,8 +49,8 @@ func WebSocket(c *gin.Context) {
 		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
 		return
 	}
-	serClient.WindowChange(query.W, query.H)
 	serClient.setCoon(conn)
+	serClient.WindowChange(query.W, query.H)
 	connList = append(connList, &MessageConn{
 		w:         &w,
 		serClient: serClient,

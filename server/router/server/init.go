@@ -37,7 +37,7 @@ func init() {
 				}
 
 				// 讀取消息
-				_, message, err := connMessage.conn.ReadMessage()
+				n, message, err := connMessage.conn.ReadMessage()
 				if err != nil {
 					connMessage.w.Done()
 					connList[i] = nil
@@ -45,6 +45,7 @@ func init() {
 				}
 
 				// 写消息
+				message = message[:n]
 				err = connMessage.serClient.write(&message)
 				if err != nil {
 					connMessage.conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
@@ -60,6 +61,7 @@ func init() {
 		for {
 			select {
 			case message := <-sshChan:
+				println("~~~~~~~~~~~~~~~~~")
 				println(string(message.msg))
 				err := message.serClient.conn.WriteMessage(websocket.TextMessage, message.msg)
 				if err != nil {
