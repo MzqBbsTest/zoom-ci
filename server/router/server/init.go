@@ -31,34 +31,6 @@ func init() {
 
 	go func() {
 		for {
-			for i, connMessage := range connList {
-				if connMessage == nil {
-					continue
-				}
-
-				// 讀取消息
-				n, message, err := connMessage.conn.ReadMessage()
-				if err != nil {
-					connMessage.w.Done()
-					connList[i] = nil
-					continue
-				}
-
-				// 写消息
-				message = message[:n]
-				err = connMessage.serClient.write(&message)
-				if err != nil {
-					connMessage.conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-					break
-				}
-
-			}
-			time.Sleep(100)
-		}
-	}()
-
-	go func() {
-		for {
 			select {
 			case message := <-sshChan:
 				err := message.serClient.conn.WriteMessage(websocket.BinaryMessage, message.msg)

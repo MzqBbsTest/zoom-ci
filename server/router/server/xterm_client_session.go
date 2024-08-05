@@ -44,7 +44,7 @@ func (s *ClientSession) login(id int) error {
 	if err != nil {
 		return err
 	}
-	s.stdout = sessionStdErr
+	s.stderr = sessionStdErr
 
 	// 启动伪终端
 	err = session.RequestPty("xterm", 80, 24, ssh.TerminalModes{
@@ -62,10 +62,31 @@ func (s *ClientSession) login(id int) error {
 		return err
 	}
 
+	return nil
+}
+
+func (s *ClientSession) write(message *[]byte) error {
+	_, err := s.stdin.Write(*message)
+	return err
+}
+
+func (s *ClientSession) close() error {
+	err := s.session.Close()
+	s.conn = nil
+	s.stdin = nil
+	s.stdout = nil
+	s.stderr = nil
+	manage.serMap[s.serverId].session[s.sessionId] = nil
+	return err
+}
+
+func (s *ClientSession) run(conn *websocket.Conn) {
+	s.conn = conn
+
 	//从 SSH 读取数据并发送到 WebSocket
 	go func() {
 		buf := make([]byte, 4096)
-		reader := io.MultiReader(sessionStdOut, sessionStdErr)
+		reader := io.MultiReader(s.stdout, s.stderr)
 		for {
 			n, err := reader.Read(buf)
 			if err != nil {
@@ -81,20 +102,22 @@ func (s *ClientSession) login(id int) error {
 				msg:       copiedMsg,
 				serClient: s,
 			}
-
 		}
 	}()
 
-	return nil
-}
+	go func() {
+		for {
+			n, message, err := conn.ReadMessage()
+			if err != nil {
+				s.close()
+				break
+			}
 
-func (s *ClientSession) write(message *[]byte) error {
-	_, err := s.stdin.Write(*message)
-	return err
-}
-
-func (s *ClientSession) setCoon(conn *websocket.Conn) {
-	s.conn = conn
+			// 写消息
+			message = message[:n]
+			s.write(&message)
+		}
+	}()
 }
 
 func (s *ClientSession) WindowChange(w, h int) error {
