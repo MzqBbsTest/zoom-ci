@@ -74,10 +74,14 @@ func (s *ClientSession) login(id int) error {
 				}
 				continue
 			}
+			copiedMsg := make([]byte, n)
+			copy(copiedMsg, buf[:n])
+
 			sshChan <- MessageSsh{
-				msg:       buf[:n],
+				msg:       copiedMsg,
 				serClient: s,
 			}
+
 		}
 	}()
 

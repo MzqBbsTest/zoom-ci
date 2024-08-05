@@ -61,16 +61,14 @@ func init() {
 		for {
 			select {
 			case message := <-sshChan:
-				println("~~~~~~~~~~~~~~~~~")
-				println(string(message.msg))
-				err := message.serClient.conn.WriteMessage(websocket.TextMessage, message.msg)
+				err := message.serClient.conn.WriteMessage(websocket.BinaryMessage, message.msg)
 				if err != nil {
 					println("error", message.msg)
 				}
 			default:
 				//println("write")
 			}
-			time.Sleep(100)
+			time.Sleep(100 * time.Microsecond)
 		}
 	}()
 

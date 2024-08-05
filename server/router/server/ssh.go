@@ -39,3 +39,29 @@ func CreateSession(c *gin.Context) {
 		"session_id": session.sessionId,
 	})
 }
+
+func SessionResize(c *gin.Context) {
+	var query WebSocketQueryBind
+	if err := c.ShouldBindQuery(&query); err != nil {
+		render.ParamError(c, err.Error())
+		return
+	}
+
+	id := query.Id
+	sessionId := query.SessionId
+	if manage.serMap[id] == nil {
+		render.NoDataError(c, "id not found")
+		return
+	}
+	if manage.serMap[id].session[sessionId] == nil {
+		render.NoDataError(c, "session id not found")
+		return
+	}
+
+	err := manage.serMap[id].session[sessionId].WindowChange(query.W, query.H)
+	if err != nil {
+		render.NoDataError(c, err.Error())
+		return
+	}
+	render.JSON(c, map[string]interface{}{})
+}
