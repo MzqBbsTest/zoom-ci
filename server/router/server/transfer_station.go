@@ -12,7 +12,9 @@ type TransferStation struct {
 func (t *TransferStation) Read(buf []byte) (n int, err error) {
 	n, buf2, err := t.conn.ReadMessage()
 	if err != nil {
-		log.Println("read error :", err.Error())
+		if closeError, ok := err.(*websocket.CloseError); !ok || closeError.Code != websocket.CloseNoStatusReceived {
+			log.Println("read error :", err.Error())
+		}
 		return 0, err
 	}
 	copy(buf, buf2)

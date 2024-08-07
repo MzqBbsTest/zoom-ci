@@ -108,7 +108,7 @@ export default {
 
             this.socket.onopen = function() {
                 term.writeln('Connected to server'); 
-                setTimeout(_this.windowResize, 200)
+                setTimeout(_this.windowResize, 1000)
             };
 
             this.socket.onerror = function(err) {

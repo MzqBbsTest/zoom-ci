@@ -19,28 +19,26 @@ type MessageSsh struct {
 	serClient *ClientSession
 }
 
-var connList []*MessageConn
-
-var sshChan chan MessageSsh
-
 func init() {
 	manage = Manage{
 		serMap: map[int]*client{},
 	}
-	sshChan = make(chan MessageSsh, 1000)
 
 	go func() {
+
+		// 自动清理掉线的session
 		for {
-			select {
-			case message := <-sshChan:
-				err := message.serClient.conn.WriteMessage(websocket.BinaryMessage, message.msg)
-				if err != nil {
-					println("error", message.msg)
+			for serverId, session := range manage.serMap {
+				_session := map[int]*ClientSession{}
+				for sessionId, v := range session.session {
+					if v == nil {
+						continue
+					}
+					_session[sessionId] = v
 				}
-			default:
-				//println("write")
+				manage.serMap[serverId].session = _session
 			}
-			time.Sleep(100 * time.Microsecond)
+			time.Sleep(10 * time.Minute)
 		}
 	}()
 

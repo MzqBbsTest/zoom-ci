@@ -45,6 +45,12 @@ func WebSocket(c *gin.Context) {
 		return
 	}
 
+	//conn.SetCloseHandler()
+	handleClose := conn.CloseHandler()
+	conn.SetCloseHandler(func(code int, text string) error {
+		serClient.close()
+		return handleClose(code, text)
+	})
 	serClient.run(conn)
 
 }

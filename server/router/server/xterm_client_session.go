@@ -47,6 +47,9 @@ func (s *ClientSession) write(message *[]byte) error {
 
 func (s *ClientSession) close() error {
 	err := s.session.Close()
+	if err != nil && err != io.EOF {
+		log.Println("close err: %v", err)
+	}
 	s.conn = nil
 	s.stdin = nil
 	s.stdout = nil
@@ -63,8 +66,17 @@ func (s *ClientSession) run(conn *websocket.Conn) {
 	//启动 shell
 	err := s.session.Shell()
 	if err != nil {
-		log.Println("Failed to start shell: %v", err)
+		log.Println("start shell: %v", err)
+		s.close()
 		return
+	}
+
+	err = s.session.Wait()
+	if err != nil {
+		if err2, ok := err.(*ssh.ExitError); !ok || err2.Waitmsg.ExitStatus() != ssh.TTY_OP_OSPEED {
+			log.Println("wait shell: %v", err)
+		}
+		s.close()
 	}
 }
 
