@@ -171,7 +171,7 @@ const routerMap = [
                     role: [priv.SERVER_VIEW],
                 },
                 component: _import('server/Server'),
-            },
+            }
         ],
     },
     {
@@ -180,7 +180,7 @@ const routerMap = [
         component: _import('Layer'),
         meta: {
             title: i18n.t('certificate'),
-            icon: 'icon-server',
+            icon: 'icon-certificate',
         },
         children: [
             {
@@ -191,6 +191,28 @@ const routerMap = [
                     role: [priv.SERVER_VIEW],
                 },
                 component: _import('certificate/Sshkey'),
+            },
+        ],
+    },
+    {
+        path: '/xterm',
+        name: 'xterm',
+        redirect: { name: 'server_xterm' },
+        component: _import('LayerXterm'),
+        meta: {
+           
+        },
+        children: [
+            {
+                path: 'xterm',
+                name: 'server_xterm',
+                meta: {
+                    title: i18n.t('server_xterm'),
+                    role: [priv.SERVER_VIEW],
+                    single: true,
+                },
+                component: _import('server/Xterm'),
+
             },
         ],
     },

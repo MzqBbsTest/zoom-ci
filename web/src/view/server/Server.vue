@@ -101,7 +101,8 @@ export default {
             })
         },
         openXtermDialogHandler(row){
-            this.$root.EmitEventGlobal("openXtermDialogHandler", {group:this.group, server:row});
+            window.open("#/xterm/xterm?server_id="+row.id)
+            //this.$root.EmitEventGlobal("openXtermDialogHandler", {group:this.group, server:row});
         },
         // openBindKeyAddDialogHandler(){
         //     this.$root.EmitEventGlobal("openBindKeyAddDialog", {});

@@ -64,11 +64,11 @@ func Install(c *gin.Context) {
 
 func InstallStatus(c *gin.Context) {
 	// check the user whose id is 1 for judge the install status
-	if zoom.App.ZoomInstalled {
-		user := &model.User{}
-		if ok := user.Get(1); !ok || user.ID == 0 {
-			zoom.App.ZoomInstalled = false
-		}
+	user := &model.User{}
+	if ok := user.Get(1); !ok || user.ID == 0 {
+		zoom.App.ZoomInstalled = false
+	} else {
+		zoom.App.ZoomInstalled = true
 	}
 	render.JSON(c, gin.H{
 		"is_installed": zoom.App.ZoomInstalled,
@@ -78,7 +78,7 @@ func InstallStatus(c *gin.Context) {
 func UpgradeFromSyncd() {
 	fmt.Print("Start Upgrading from Syncd2.0 ... ")
 	result := system.UpgradeFromSyncd()
-	if result{
+	if result {
 		fmt.Println("OK")
 	} else {
 		fmt.Println("no need!")

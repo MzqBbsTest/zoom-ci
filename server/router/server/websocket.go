@@ -48,6 +48,7 @@ func WebSocket(c *gin.Context) {
 	//conn.SetCloseHandler()
 	handleClose := conn.CloseHandler()
 	conn.SetCloseHandler(func(code int, text string) error {
+		log.Println("websocket close ", query.SessionId)
 		serClient.close()
 		return handleClose(code, text)
 	})
