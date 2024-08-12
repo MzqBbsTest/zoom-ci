@@ -31,6 +31,15 @@ const (
 	SERVER_SESSION        = "/server/session"
 	SERVER_SESSION_RESIZE = "/server/session/resize"
 
+	SERVER_SFTP            = "/server/sftp"
+	SERVER_SFTP_CREATE_DIR = "/server/sftp/rename"
+	SERVER_SFTP_DIR        = "/server/sftp/dir"
+	SERVER_SFTP_UPLOAD     = "/server/sftp/upload"
+	SERVER_SFTP_DELETE     = "/server/sftp/delete"
+	SERVER_SFTP_ZIP        = "/server/sftp/zip"
+	SERVER_SFTP_UNZIP      = "/server/sftp/unzip"
+	SERVER_SFTP_DOWN       = "/server/sftp/down"
+
 	USER_ROLE_PRIV_LIST = "/user/role/privlist"
 	USER_ROLE_ADD       = "/user/role/add"
 	USER_ROLE_UPDATE    = "/user/role/update"
