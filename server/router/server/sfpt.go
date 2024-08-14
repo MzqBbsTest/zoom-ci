@@ -300,7 +300,7 @@ func SftpUnZip(c *gin.Context) {
 	}
 	defer session.Close()
 
-	fix := query.Path[-3:]
+	fix := query.Path[len(query.Path)-3:]
 	cmd := ""
 	switch fix {
 	case "zip":
