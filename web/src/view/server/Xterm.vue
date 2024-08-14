@@ -5,9 +5,10 @@
             width="400"
             trigger="hover">
             <el-table :data="serverList">
-                <el-table-column width="300" property="name" label="服务器名字"></el-table-column>
-                <el-table-column width="100" property="address" label="操作">
+                <el-table-column width="250" property="name" label="服务器名字"></el-table-column>
+                <el-table-column width="150" property="address" label="操作">
                     <template slot-scope="scope">
+                        <el-button @click="openFtpDialogHandler(scope.row)"  size="small">sftp</el-button>
                         <el-button @click="openXtermDialogHandler(scope.row)"  size="small">连接</el-button>
                     </template>
                 </el-table-column>
@@ -59,6 +60,34 @@
             </el-tab-pane>
         </el-tabs>
         
+
+        <el-dialog :title="ftpDialog.title" :visible.sync="ftpDialog.dialogTableVisible" width="80%">
+            <div style="margin-top: 15px;">
+                <el-input placeholder="路径" v-model="input3" class="input-with-select">
+                   
+                    <el-button slot="append" >进入</el-button>
+                    <el-button slot="append" >上传</el-button>
+                    <el-button slot="append" >创建目录</el-button>
+                    <el-button slot="append" >刷新</el-button>
+                </el-input>
+            </div>
+            <el-table :data="ftpDialog.gridData">
+                <el-table-column property="date" label="文件名" width="150"></el-table-column>
+                <el-table-column property="name" label="权限/所有者" width="200"></el-table-column>
+                <el-table-column property="time" label="修改时间"></el-table-column>
+                <el-table-column property="address" label="操作">
+                    <template slot-scope="scope">
+                        <el-button @click="openFtpDialogHandler(scope.row)"  size="small">打开</el-button>
+                        <el-button @click="openXtermDialogHandler(scope.row)"  size="small">重命名</el-button>
+                        <el-button @click="openXtermDialogHandler(scope.row)"  size="small">上传</el-button>
+                        <el-button @click="openXtermDialogHandler(scope.row)"  size="small">权限</el-button>
+                        <el-button @click="openXtermDialogHandler(scope.row)"  size="small">压缩</el-button>
+                        <el-button @click="openXtermDialogHandler(scope.row)"  size="small">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -90,6 +119,11 @@ export default {
             tableServerLoading:false,
             cmdList:[],
             tableCmdLoading:false,
+            ftpDialog:{
+                title:"",
+                dialogTableVisible: false,
+                gridData:[]
+            }
         }
     },
     methods: {
@@ -100,6 +134,10 @@ export default {
                     name: name
                 } });
             })
+        },
+        openFtpDialogHandler(row){
+            this.ftpDialog.dialogTableVisible = true
+            this.ftpDialog.title = row.name
         },
         openXtermDialogHandler(row) {
             console.log(row)
