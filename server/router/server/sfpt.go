@@ -51,7 +51,7 @@ func SftpIndex(c *gin.Context) {
 	// 建立 SSH 连接
 	conn, err := connect(query)
 	if err != nil {
-		log.Fatalf("Failed to dial: %s", err)
+		//log.Fatalf("Failed to dial: %s", err)
 		render.ParamError(c, err.Error())
 		return
 	}
@@ -60,25 +60,64 @@ func SftpIndex(c *gin.Context) {
 	// 建立 SFTP 连接
 	client, err := sftp.NewClient(conn)
 	if err != nil {
-		log.Fatalf("Failed to create client: %s", err)
+		//log.Fatalf("Failed to create client: %s", err)
 		render.ParamError(c, err.Error())
 		return
 	}
 	defer client.Close()
 
 	// 远程目录路径
-	remoteDir := "~/"
+	remoteDir := query.Path
+	if len(remoteDir) == 0 {
+		remoteDir = "."
+	}
+
+	if remoteDir[len(remoteDir)-1] == '.' {
+		remoteDir, err = client.RealPath(remoteDir)
+		if err != nil {
+			render.ParamError(c, err.Error())
+			return
+		}
+	}
 
 	// 读取远程目录
 	files, err := client.ReadDir(remoteDir)
 	if err != nil {
-		log.Fatalf("Failed to read directory: %s", err)
+		//log.Fatalf("Failed to read directory: %s", err)
 		render.ParamError(c, err.Error())
 		return
 	}
 
+	var _files []map[string]interface{}
+	fileCount := 0
+	dirCount := 0
+	for _, file := range files {
+
+		fileInfo := getFileInfo(file, remoteDir)
+
+		if file.Mode()&os.ModeSymlink != 0 {
+			// 这是一个符号链接
+			target, err := client.ReadLink(remoteDir + file.Name())
+			if err != nil {
+				render.ParamError(c, err.Error())
+				return
+			}
+			fileInfo["link_target"] = target
+		}
+
+		if fileInfo["type"] == 'd' {
+			dirCount += 1
+		} else {
+			fileCount += 1
+		}
+		_files = append(_files, fileInfo)
+	}
+
 	render.JSON(c, map[string]interface{}{
-		"files": files,
+		"files":       _files,
+		"file_count":  fileCount,
+		"dir_count":   dirCount,
+		"current_dir": remoteDir,
 	})
 }
 

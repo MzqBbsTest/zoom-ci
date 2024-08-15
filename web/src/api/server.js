@@ -208,3 +208,7 @@ export function serverSession(data){
 export function serverSessionResize(data){
     return get('/server/session/resize', data)
 }
+
+export function listFtpApi(data){
+    return get('/server/sftp', data)
+}

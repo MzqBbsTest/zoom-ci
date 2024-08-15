@@ -63,26 +63,39 @@
 
         <el-dialog :title="ftpDialog.title" :visible.sync="ftpDialog.dialogTableVisible" width="80%">
             <div style="margin-top: 15px;">
-                <el-input placeholder="路径" v-model="input3" class="input-with-select">
+                <el-input placeholder="路径" v-model="ftpDialog.path" class="input-with-select">
                    
-                    <el-button slot="append" >进入</el-button>
+                    <el-button slot="append" @click="sftpList(ftpDialog.path)">进入</el-button>
+                    <el-button slot="append" @click="sftpList(ftpDialog.path + '/..')">回退</el-button>
                     <el-button slot="append" >上传</el-button>
                     <el-button slot="append" >创建目录</el-button>
-                    <el-button slot="append" >刷新</el-button>
+                    <el-button slot="append" @click="sftpList(ftpDialog.path)">刷新</el-button>
                 </el-input>
             </div>
-            <el-table :data="ftpDialog.gridData">
-                <el-table-column property="date" label="文件名" width="150"></el-table-column>
-                <el-table-column property="name" label="权限/所有者" width="200"></el-table-column>
-                <el-table-column property="time" label="修改时间"></el-table-column>
-                <el-table-column property="address" label="操作">
+            <el-table :data="ftpDialog.gridData" max-height="500"   :default-sort = "{prop: 'name', order: 'descending'}">
+                <el-table-column property="name" label="文件名" sortable style="font-size:12px" >
                     <template slot-scope="scope">
-                        <el-button @click="openFtpDialogHandler(scope.row)"  size="small">打开</el-button>
-                        <el-button @click="openXtermDialogHandler(scope.row)"  size="small">重命名</el-button>
-                        <el-button @click="openXtermDialogHandler(scope.row)"  size="small">上传</el-button>
-                        <el-button @click="openXtermDialogHandler(scope.row)"  size="small">权限</el-button>
-                        <el-button @click="openXtermDialogHandler(scope.row)"  size="small">压缩</el-button>
-                        <el-button @click="openXtermDialogHandler(scope.row)"  size="small">删除</el-button>
+                        <i :class="{
+                            'el-icon-folder-opened': scope.row.type == 'd' ,
+                            'dir':  scope.row.type == 'd',
+                             }" >
+                            {{ scope.row.name }}<i v-if="scope.row.link_target" :class="{ 'link':  scope.row.link_target}">-> {{ scope.row.link_target }}</i> 
+                        </i>
+                    </template>
+                </el-table-column>
+                <el-table-column property="mode" label="权限/所有者" ></el-table-column>
+                <el-table-column property="mod_time" label="修改时间" sortable ></el-table-column>
+                <el-table-column property="address" width="400" label="操作">
+                    <template slot-scope="scope">
+                        <el-button-group>
+                            <el-button @click="sftpList(scope.row.path)"  size="mini" v-if="scope.row.type == 'd'">打开</el-button>
+                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini">重命名</el-button>
+                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini" v-if="scope.row.type == 'd'">上传</el-button>
+                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini">权限</el-button>
+                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini"  v-if="scope.row.tar">压缩</el-button>
+                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini"  v-if="scope.row.untar">解压</el-button>
+                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini">删除</el-button>
+                        </el-button-group>
                     </template>
                 </el-table-column>
             </el-table>
@@ -91,8 +104,20 @@
     </div>
 </template>
 
+<style>
+    .dir{
+        color:#409EFF
+    }
+    .link{
+        color:#E6A23C
+    }
+    .file{
+        color:#67C23A
+    }
+</style>
+
 <script>
-import { listServerApi, testServerConnect } from '@/api/server'
+import { listServerApi, testServerConnect, listFtpApi } from '@/api/server'
 import ServerXtermPlan from './ServerXtermPlan.vue'
 import Vue from "vue";
 
@@ -120,9 +145,11 @@ export default {
             cmdList:[],
             tableCmdLoading:false,
             ftpDialog:{
+                id:0,
                 title:"",
                 dialogTableVisible: false,
-                gridData:[]
+                gridData:[],
+                path: ""
             }
         }
     },
@@ -135,9 +162,18 @@ export default {
                 } });
             })
         },
+        sftpList(path){
+            listFtpApi({id: this.ftpDialog.id, path:path}).then(res=>{
+                this.ftpDialog.gridData = res.files
+                this.ftpDialog.path = res.current_dir
+            })
+        },
         openFtpDialogHandler(row){
+            this.ftpDialog.path = ""
             this.ftpDialog.dialogTableVisible = true
             this.ftpDialog.title = row.name
+            this.ftpDialog.id = row.id
+            this.sftpList("")
         },
         openXtermDialogHandler(row) {
             console.log(row)
