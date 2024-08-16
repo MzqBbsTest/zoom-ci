@@ -128,4 +128,36 @@ export function get(url, params, headers) {
     return service(config)
 }
 
+
+export function upload(url, data, params, headers, onUploadProgress) {
+    if (!params) {
+        params = {}
+    }
+    params._t = new Date().getTime()
+    let config = {
+        method: 'post',
+        url: url,
+        params,
+        onUploadProgress: onUploadProgress
+    }
+    headers['Content-Type'] = 'multipart/form-data'
+    config.data = data
+    if (headers) {
+        config.headers = headers
+    }
+
+    config.cancelToken = new CancelToken(function(cancel) {
+        Vue.prototype.$CancelAjaxRequet = function() {
+            cancel()
+        }
+    })
+    if(!config.headers){
+        config.headers = {}
+    }
+    config.headers["Authorization"] = Util.GetLoginToken();
+    return service(config)
+}
+
+
+
 export default service;
