@@ -32,8 +32,9 @@ const (
 	SERVER_SESSION_RESIZE = "/server/session/resize"
 
 	SERVER_SFTP            = "/server/sftp"
-	SERVER_SFTP_CREATE_DIR = "/server/sftp/rename"
-	SERVER_SFTP_DIR        = "/server/sftp/dir"
+	SERVER_SFTP_CREATE_DIR = "/server/sftp/create"
+	SERVER_SFTP_RENAME     = "/server/sftp/rename"
+	SERVER_SFTP_MOD        = "/server/sftp/mod"
 	SERVER_SFTP_UPLOAD     = "/server/sftp/upload"
 	SERVER_SFTP_DELETE     = "/server/sftp/delete"
 	SERVER_SFTP_ZIP        = "/server/sftp/zip"

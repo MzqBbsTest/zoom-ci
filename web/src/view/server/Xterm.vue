@@ -67,18 +67,15 @@
                    
                     <el-button slot="append" @click="sftpList(ftpDialog.path)">进入</el-button>
                     <el-button slot="append" @click="sftpList(ftpDialog.path + '/..')">回退</el-button>
-                    <el-button slot="append" >上传</el-button>
-                    <el-button slot="append" >创建目录</el-button>
+                    <el-button slot="append" @click="uploadFile(ftpDialog.path)">上传</el-button>
+                    <el-button slot="append" @click="ftpDialog.dir.visible=true">创建目录</el-button>
                     <el-button slot="append" @click="sftpList(ftpDialog.path)">刷新</el-button>
                 </el-input>
             </div>
             <el-table :data="ftpDialog.gridData" max-height="500"   :default-sort = "{prop: 'name', order: 'descending'}">
                 <el-table-column property="name" label="文件名" sortable style="font-size:12px" >
                     <template slot-scope="scope">
-                        <i :class="{
-                            'el-icon-folder-opened': scope.row.type == 'd' ,
-                            'dir':  scope.row.type == 'd',
-                             }" >
+                        <i :class="{'el-icon-folder-opened': scope.row.type == 'd', 'dir':  scope.row.type == 'd'}" >
                             {{ scope.row.name }}<i v-if="scope.row.link_target" :class="{ 'link':  scope.row.link_target}">-> {{ scope.row.link_target }}</i> 
                         </i>
                     </template>
@@ -89,18 +86,57 @@
                     <template slot-scope="scope">
                         <el-button-group>
                             <el-button @click="sftpList(scope.row.path)"  size="mini" v-if="scope.row.type == 'd'">打开</el-button>
-                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini">重命名</el-button>
-                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini" v-if="scope.row.type == 'd'">上传</el-button>
-                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini">权限</el-button>
+                            <el-button @click="ftpRenameShow(scope.row)"  size="mini">重命名</el-button>
+                            <el-button @click="uploadFile(scope.row.path)"  size="mini" v-if="scope.row.type == 'd'">上传</el-button>
+                            <el-button @click="ftpModShow(scope.row)"  size="mini">权限</el-button>
+                            <el-button @click="downXtermDialogHandler(scope.row)"  size="mini" v-if="scope.row.type != 'd'">下载</el-button>
                             <el-button @click="openXtermDialogHandler(scope.row)"  size="mini"  v-if="scope.row.tar">压缩</el-button>
                             <el-button @click="openXtermDialogHandler(scope.row)"  size="mini"  v-if="scope.row.untar">解压</el-button>
-                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini">删除</el-button>
+                            <el-button @click="sftpDelete(scope.row.path)"  size="mini">删除</el-button>
                         </el-button-group>
                     </template>
                 </el-table-column>
             </el-table>
         </el-dialog>
 
+        <!-- 权限设置 -->
+        <el-dialog :visible.sync="ftpDialog.mod.visible" >
+            <el-form >
+                <el-form-item label="权限" >
+                    <el-input v-model="ftpDialog.mod.mode" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="ftpDialog.mod.visible = false">取 消</el-button>
+                <el-button type="primary" @click="ftpMod()">确 定</el-button>
+            </div>
+        </el-dialog>
+
+        <!-- 重命名 -->
+        <el-dialog :visible.sync="ftpDialog.rename.visible" >
+            <el-form >
+                <el-form-item label="名字" >
+                    <el-input v-model="ftpDialog.rename.name" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="ftpDialog.rename.visible = false">取 消</el-button>
+                <el-button type="primary" @click="ftpRename()">确 定</el-button>
+            </div>
+        </el-dialog>
+
+        <!-- 目录创建 -->
+        <el-dialog :visible.sync="ftpDialog.dir.visible" >
+            <el-form >
+                <el-form-item label="新建目录" >
+                    <el-input v-model="ftpDialog.dir.path" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="ftpDialog.dir.visible = false">取 消</el-button>
+                <el-button type="primary" @click="ftpCreateDir()">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -117,8 +153,11 @@
 </style>
 
 <script>
-import { listServerApi, testServerConnect, listFtpApi } from '@/api/server'
+import { 
+    listServerApi, listFtpApi, deleteFtpApi, createDirFtpApi, 
+    renameFtpApi, modFtpApi, downFtpApi, uploadFtpApi } from '@/api/server'
 import ServerXtermPlan from './ServerXtermPlan.vue'
+import util from '@/lib/util.js'
 import Vue from "vue";
 
 export default {
@@ -146,14 +185,208 @@ export default {
             tableCmdLoading:false,
             ftpDialog:{
                 id:0,
+                sftp_upload_percentage:0,
                 title:"",
                 dialogTableVisible: false,
                 gridData:[],
-                path: ""
+                path: "",
+                dir:{
+                    visible: false,
+                    path: "",
+                },
+                rename:{
+                    visible: false,
+                    name: "",
+                    row:null,
+                },
+                mod:{
+                    visible: false,
+                    row:null,
+                    mode:"",
+                }
             }
         }
     },
     methods: {
+        uploadFile(path) {
+            this.sftp_upload_percentage = 0
+            let _this = this
+            function upload(fileList) {
+                let formData = new FormData();
+                formData.append("id", _this.ftpDialog.id);
+                formData.append("path", path);
+                for (let i = 0; i < fileList.length; i++) {
+                    formData.append("files", fileList[i]);
+                }
+                console.log(formData)
+                uploadFtpApi(formData, (progressEvent)=>{
+                    const { loaded, total } = progressEvent;
+                    if (!total) {
+                        // 没有获取到总大小，可能是流式上传或者chunked传输
+                        _this.sftp_upload_percentage = loaded;
+                    } else {
+                        // 计算进度，可以用 loaded / total 得到一个0到1的数字
+                        _this.sftp_upload_percentage = loaded / total * 100 | 0;
+                    }
+                }).then(res=>{
+                    this.sftpList(path)
+                    this.$message({
+                        type: 'success',
+                        message: res.msg
+                    });
+                })
+            }
+
+            let fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.multiple = true;
+
+            fileInput.onchange = function (f) {
+                let fileList = fileInput.files;
+                upload(fileList);
+            };
+            fileInput.click();  
+        },
+        downXtermDialogHandler(row){
+            downFtpApi({
+                id: this.ftpDialog.id,
+                path: row.path
+            }).then((data)=>{
+                let blob = new Blob([data.data], { type: 'application/x-download' });
+                let a = document.createElement("a");
+                a.style.display = 'none';
+                let url = window.URL.createObjectURL(blob);
+                a.href = url;
+                a.download = row.path;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a); 
+                window.URL.revokeObjectURL(url);
+            })
+        },
+        ftpModShow(row){
+            this.ftpDialog.mod.visible=true
+            this.ftpDialog.mod.row=row
+            this.ftpDialog.mod.mode=util.PermissionToOctal(row.mode)
+        },
+        ftpRenameShow(row){
+            this.ftpDialog.rename.visible=true
+            this.ftpDialog.rename.row=row
+        },
+        ftpMod(){
+            let path = this.ftpDialog.mod.row.path;
+            let mode = this.ftpDialog.mod.mode;
+            this.$confirm('设置目录权限'+path+'：'+mode +', 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                modFtpApi({
+                    id: this.ftpDialog.id,
+                    path: path,
+                    mod: mode
+                }).then((res)=>{
+                    this.ftpDialog.mod.row  = null
+                    this.ftpDialog.mod.mode  = ""
+                    this.ftpDialog.mod.visible  = false
+                    this.sftpList(this.ftpDialog.path)
+                    this.$message({
+                        type: 'success',
+                        message: '成功!'
+                    });
+                });
+            }).catch((e) => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消'
+                });          
+            });
+        },
+        ftpRename(){
+            let path = this.ftpDialog.rename.row.path;
+            let newPpath = this.ftpDialog.rename.name;
+            if(newPpath[0] != "/"){
+                newPpath = this.ftpDialog.path + "/" + newPpath
+            }
+            this.$confirm('把是'+path+'修改成'+newPpath +', 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                renameFtpApi({
+                    id: this.ftpDialog.id,
+                    path: path,
+                    new_path: newPpath
+                }).then((res)=>{
+                    this.ftpDialog.rename.row  = null
+                    this.ftpDialog.rename.name  = ""
+                    this.ftpDialog.rename.visible  = false
+                    this.sftpList(this.ftpDialog.path)
+                    this.$message({
+                        type: 'success',
+                        message: '成功!'
+                    });
+                });
+            }).catch((e) => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消'
+                });          
+            });
+        },
+        ftpCreateDir(){
+            let path = this.ftpDialog.dir.path;
+            if(path[0] != "/"){
+                path = this.ftpDialog.path + "/" + path
+            }
+            this.$confirm('新目录是'+path+', 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                createDirFtpApi({
+                    id: this.ftpDialog.id,
+                    path: path
+                }).then((res)=>{
+                    this.ftpDialog.dir.path = ""
+                    this.sftpList(this.ftpDialog.path)
+                    this.$message({
+                        type: 'success',
+                        message: '成功!'
+                    });
+                });
+            }).catch((e) => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消'
+                });          
+            });
+        },
+        sftpDelete(path){
+             this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                deleteFtpApi({
+                    id: this.ftpDialog.id,
+                    path: path
+                }).then((res)=>{
+                    this.sftpList(this.ftpDialog.path)
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                });
+
+            }).catch((e) => {
+                console.log(e)
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });          
+            });
+        },
         removeTab(name){
             this.xtermTabs = this.xtermTabs.filter(item => item.name !== name);
             Vue.nextTick(()=>{

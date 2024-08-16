@@ -1,5 +1,6 @@
-import {get, post} from '@/lib/fetch.js'
-
+import {get, post, upload} from '@/lib/fetch.js'
+import axios from "axios";
+import util from '@/lib/util.js'
 export function newGroupApi(data) {
     return post('/server/group/add', data)
 }
@@ -211,4 +212,36 @@ export function serverSessionResize(data){
 
 export function listFtpApi(data){
     return get('/server/sftp', data)
+}
+
+
+export function deleteFtpApi(data){
+    return get('/server/sftp/delete', data)
+}
+
+export function createDirFtpApi(data){
+    return get('/server/sftp/create', data)
+}
+
+export function renameFtpApi(data){
+    return get('/server/sftp/rename', data)
+}
+
+export function modFtpApi(data){
+    return get('/server/sftp/mod', data)
+}
+
+export function downFtpApi(data){
+    return axios.get('/api/server/sftp/down', {
+        params: data,
+        headers:{
+            "Authorization": util.GetLoginToken()
+        }
+    }) 
+    
+}
+
+export function uploadFtpApi(data, onUploadProgress){
+    return upload('/server/sftp/upload', data, {}, {}, onUploadProgress) 
+    
 }

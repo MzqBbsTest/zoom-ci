@@ -52,10 +52,14 @@ func RegisterRoute() {
 		api.GET(reqApi.SERVER_SESSION_RESIZE, server.SessionResize)
 
 		api.GET(reqApi.SERVER_SFTP, server.SftpIndex)
-		//api.GET(reqApi.SERVER_SFTP_DIR, server.SftpCanDir)
+		api.GET(reqApi.SERVER_SFTP_RENAME, server.SftpRename)
+		api.GET(reqApi.SERVER_SFTP_MOD, server.SftpChmod)
 		api.GET(reqApi.SERVER_SFTP_CREATE_DIR, server.SftpCreateDir)
-		api.GET(reqApi.SERVER_SFTP_UPLOAD, server.SftpUploadFile)
+		api.POST(reqApi.SERVER_SFTP_UPLOAD, server.SftpUploadFile)
 		api.GET(reqApi.SERVER_SFTP_DELETE, server.SftpDeleteFile)
+		api.GET(reqApi.SERVER_SFTP_ZIP, server.SftpCreateZip)
+		api.GET(reqApi.SERVER_SFTP_UNZIP, server.SftpUnZip)
+		api.GET(reqApi.SERVER_SFTP_DOWN, server.SftpDown)
 
 		api.GET(reqApi.USER_ROLE_PRIV_LIST, user.RolePrivList)
 		api.POST(reqApi.USER_ROLE_ADD, user.RoleAdd)

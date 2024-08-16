@@ -157,4 +157,20 @@ export default {
         })
         return checked
     },
+    PermissionToOctal(permission) {
+        // 文件权限 "-rw-r--r--" 转换为八进制数字 "0611"
+        const permissionMap = {
+          'r': 4,
+          'w': 2,
+          'x': 1,
+          '-': 0
+        };
+      
+       let s1 = permissionMap[permission[0]];
+       let s2 = permissionMap[permission[1]] + permissionMap[permission[2]] + permissionMap[permission[3]];
+       let s3 = permissionMap[permission[4]] + permissionMap[permission[5]] + permissionMap[permission[6]];
+       let s4 = permissionMap[permission[7]] + permissionMap[permission[8]] + permissionMap[permission[9]];
+        return s1.toString(8) + s2 + s3 + s4 ;
+      }
+      
 }

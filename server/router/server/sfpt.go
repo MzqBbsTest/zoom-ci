@@ -10,6 +10,8 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
+	"strconv"
 )
 
 type SftpQueryBind struct {
@@ -157,37 +159,13 @@ func SftpCreateDir(c *gin.Context) {
 
 func SftpUploadFile(c *gin.Context) {
 	var query SftpQueryBind
-	if err := c.ShouldBindQuery(&query); err != nil {
+	if err := c.ShouldBind(&query); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
 
-	file, err := c.FormFile("file")
+	form, err := c.MultipartForm()
 	if err != nil {
-		log.Fatalf("Failed to create client: %s", err)
-		render.ParamError(c, err.Error())
-		return
-	}
-
-	src, err := file.Open()
-	if err != nil {
-		log.Fatalf("Failed to create client: %s", err)
-		render.ParamError(c, err.Error())
-		return
-	}
-	defer src.Close()
-
-	tempFile, err := os.CreateTemp("", "upload-*.tmp")
-	if err != nil {
-		log.Fatalf("Failed to create client: %s", err)
-		render.ParamError(c, err.Error())
-		return
-	}
-	defer tempFile.Close()
-
-	// 将上传的文件内容复制到临时文件
-	if _, err := io.Copy(tempFile, src); err != nil {
-		log.Fatalf("Failed to create client: %s", err)
 		render.ParamError(c, err.Error())
 		return
 	}
@@ -195,7 +173,6 @@ func SftpUploadFile(c *gin.Context) {
 	// 建立 SSH 连接
 	conn, err := connect(query)
 	if err != nil {
-		log.Fatalf("Failed to dial: %s", err)
 		render.ParamError(c, err.Error())
 		return
 	}
@@ -210,31 +187,31 @@ func SftpUploadFile(c *gin.Context) {
 	}
 	defer client.Close()
 
-	localFile, err := os.Open(tempFile.Name())
-	if err != nil {
-		log.Fatalf("Failed to create client: %s", err)
-		render.ParamError(c, err.Error())
-		return
+	var ret []string
+	files := form.File["files"]
+	for _, file := range files {
+		srcFile, err := file.Open()
+		if err != nil {
+			continue
+		}
+		fileName := file.Filename
+		dstFile, err := client.Create(path.Join(query.Path, fileName))
+		if err != nil {
+			continue
+		}
+		_, err = io.Copy(dstFile, srcFile)
+		if err != nil {
+			continue
+		}
+		_ = srcFile.Close()
+		_ = dstFile.Close()
+		ret = append(ret, fileName)
 	}
-	defer localFile.Close()
-
-	// 在远程服务器上创建文件
-	remoteFilePath := query.Path + tempFile.Name()
-	remoteFile, err := client.Create(remoteFilePath)
-	if err != nil {
-		log.Fatalf("Failed to create client: %s", err)
-		render.ParamError(c, err.Error())
-		return
-	}
-	defer remoteFile.Close()
-
-	_, err = io.Copy(remoteFile, localFile)
-	if err != nil {
-		log.Fatalf("Failed to create client: %s", err)
-		render.ParamError(c, err.Error())
-		return
-	}
-	render.JSON(c, map[string]interface{}{})
+	msg := strconv.Itoa(len(ret)) + " 个文件上传成功"
+	render.JSON(c, map[string]interface{}{
+		"msg":  msg,
+		"data": ret,
+	})
 }
 
 func SftpDeleteFile(c *gin.Context) {
@@ -268,17 +245,55 @@ func SftpDeleteFile(c *gin.Context) {
 		return
 	}
 
-	if fileInfo.IsDir() {
-		err = client.RemoveDirectory(query.Path)
-	} else {
+	if fileInfo.IsDir() == false {
 		err = client.Remove(query.Path)
+		if err != nil {
+			render.ParamError(c, err.Error())
+			return
+		}
+
+		render.JSON(c, map[string]interface{}{})
+		return
 	}
+
+	err = SftpDeleteDir(client, query.Path)
 	if err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
 
 	render.JSON(c, map[string]interface{}{})
+}
+
+func SftpDeleteDir(client *sftp.Client, rootPath string) error {
+	files, err := client.ReadDir(rootPath)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		// 获取当前文件或子目录的完整路径
+		fullPath := path.Join(rootPath, file.Name())
+
+		if file.IsDir() {
+			// 如果是目录，递归删除子目录
+			err := SftpDeleteDir(client, fullPath)
+			if err != nil {
+				return err
+			}
+		} else {
+			// 如果是文件，删除文件
+			err := client.Remove(fullPath)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	err = client.Remove(rootPath)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func SftpCreateZip(c *gin.Context) {
@@ -453,6 +468,7 @@ func SftpDown(c *gin.Context) {
 	// 设置下载头并发送文件
 	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", stat.Name()))
 	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Length", fmt.Sprintf("%d", stat.Size()))
 	c.File(localFile.Name())
 }
 
