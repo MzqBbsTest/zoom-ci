@@ -217,11 +217,12 @@ export default {
                 zipFtpApi({
                     id: this.ftpDialog.id,
                     path: row.path, 
+                    new_path: row.path + '.' + (new Date()).getTime(), 
                 }).then(res=>{
-                    this.sftpList(path)
+                    this.sftpList(this.ftpDialog.path)
                     this.$message({
                         type: 'success',
-                        message: res.msg
+                        message: '压缩成功'
                     });
                 })
             })
@@ -235,11 +236,12 @@ export default {
                 unzipFtpApi({
                     id: this.ftpDialog.id,
                     path: row.path, 
+                    new_path: row.path + '.' + (new Date()).getTime(), 
                 }).then(res=>{
-                    this.sftpList(path)
+                    this.sftpList(this.ftpDialog.path)
                     this.$message({
                         type: 'success',
-                        message: res.msg
+                        message: '解压成功'
                     });
                 })
             })

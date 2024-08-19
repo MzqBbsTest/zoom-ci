@@ -298,7 +298,7 @@ func SftpDeleteDir(client *sftp.Client, rootPath string) error {
 
 func SftpCreateZip(c *gin.Context) {
 	var query SftpQueryBind
-	if err := c.ShouldBindQuery(&query); err != nil {
+	if err := c.ShouldBind(&query); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
@@ -306,7 +306,6 @@ func SftpCreateZip(c *gin.Context) {
 	// 建立 SSH 连接
 	conn, err := connect(query)
 	if err != nil {
-		log.Fatalf("Failed to dial: %s", err)
 		render.ParamError(c, err.Error())
 		return
 	}
@@ -320,7 +319,7 @@ func SftpCreateZip(c *gin.Context) {
 	}
 	defer session.Close()
 
-	if _, err = session.CombinedOutput(fmt.Sprintf("tar -cvf %s.tar %s", query.NewPath, query.Path)); err != nil {
+	if _, err = session.CombinedOutput(fmt.Sprintf("tar -cf %s.tar %s", query.NewPath, query.Path)); err != nil {
 		render.AppError(c, err.Error())
 		return
 	}
@@ -332,7 +331,7 @@ func SftpCreateZip(c *gin.Context) {
 
 func SftpUnZip(c *gin.Context) {
 	var query SftpQueryBind
-	if err := c.ShouldBindQuery(&query); err != nil {
+	if err := c.ShouldBind(&query); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
@@ -340,7 +339,7 @@ func SftpUnZip(c *gin.Context) {
 	// 建立 SSH 连接
 	conn, err := connect(query)
 	if err != nil {
-		log.Fatalf("Failed to dial: %s", err)
+		//log.Fatalf("Failed to dial: %s", err)
 		render.ParamError(c, err.Error())
 		return
 	}
@@ -360,7 +359,7 @@ func SftpUnZip(c *gin.Context) {
 	case "zip":
 		cmd = fmt.Sprintf("unzip  %s -d %s", query.Path, query.NewPath)
 	case "tar":
-		cmd = fmt.Sprintf("tar -xvf %s -C %s", query.Path, query.NewPath)
+		cmd = fmt.Sprintf("mkdir -p  %s && tar -xvf %s -C %s", query.NewPath, query.Path, query.NewPath)
 	case ".7z":
 		cmd = fmt.Sprintf("7z -x %s.7z -r -o%s", query.Path, query.NewPath)
 	}
