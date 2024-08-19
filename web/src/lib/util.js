@@ -171,6 +171,83 @@ export default {
        let s3 = permissionMap[permission[4]] + permissionMap[permission[5]] + permissionMap[permission[6]];
        let s4 = permissionMap[permission[7]] + permissionMap[permission[8]] + permissionMap[permission[9]];
         return s1.toString(8) + s2 + s3 + s4 ;
-      }
+    },
+
+    determineFileType: function (ext, type) {
+        /**
+         * @description 文件类型判断，或返回格式类型(不传入type)
+         * @param {String} ext
+         * @param {String} type
+         * @return {Boolean|Object} 返回类型或类型是否支持
+         */
+        var config = {
+            images: ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'ico', 'JPG', 'webp'],
+            compress: ['zip', 'rar', 'gz', 'war', 'tgz', 'tar', '7z'],
+            video: ['mp4', 'mp3', 'mpeg', 'mpg', 'mov', 'avi', 'webm', 'mkv', 'mkv', 'mp3', 'rmvb', 'wma', 'wmv'],
+            ont_text: ['iso', 'xlsx', 'xls', 'doc', 'docx', 'tiff', 'exe', 'so', 'bz', 'dmg', 'apk', 'pptx', 'ppt', 'xlsb', 'pdf'],
+        },
+        returnVal = false;
+        if (type != undefined) {
+            if (type == 'text') {
+                config.forEach(item=>{
+                    item.forEach(items=>{
+                        if (items == ext) {
+                            returnVal = true;
+                            return false;
+                        }
+                    })
+                })
+
+                // $.each(config, function (key, item) {
+                //     $.each(item, function (index, items) {
+                //         if (items == ext) {
+                //             returnVal = true;
+                //             return false;
+                //         }
+                //     });
+                // });
+                returnVal = !returnVal;
+            } else {
+                if (typeof config[type] == 'undefined') return false;
+                config[type].forEach(item=>{
+                    if (item == ext) {
+                        returnVal = true;
+                        return false;
+                    }
+                })
+            }
+
+
+            //     $.each(config[type], function (key, item) {
+            //         if (item == ext) {
+            //             returnVal = true;
+            //             return false;
+            //         }
+            //     });
+            // }
+
+        } else {
+            config.forEach(item=>{
+                item.forEach(items=>{
+                    if (items == ext) {
+                        returnVal = true;
+                        return false;
+                    }
+                })
+            })
+
+            // $.each(config, function (key, item) {
+            //     $.each(item, function (index, items) {
+            //     if (items == ext) {
+            //         returnVal = key;
+            //         return false;
+            //     }
+            //     });
+            // });
+            if (typeof returnVal == 'boolean') returnVal = 'text';
+        }
+        return returnVal;
+    }
+    
       
 }

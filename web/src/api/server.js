@@ -243,5 +243,13 @@ export function downFtpApi(data){
 
 export function uploadFtpApi(data, onUploadProgress){
     return upload('/server/sftp/upload', data, {}, {}, onUploadProgress) 
-    
 }
+
+export function zipFtpApi(data){
+    return post('/server/sftp/zip', data) 
+}
+
+export function unzipFtpApi(data){
+    return post('/server/sftp/unzip', data) 
+}
+

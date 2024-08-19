@@ -90,8 +90,8 @@
                             <el-button @click="uploadFile(scope.row.path)"  size="mini" v-if="scope.row.type == 'd'">上传</el-button>
                             <el-button @click="ftpModShow(scope.row)"  size="mini">权限</el-button>
                             <el-button @click="downXtermDialogHandler(scope.row)"  size="mini" v-if="scope.row.type != 'd'">下载</el-button>
-                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini"  v-if="scope.row.tar">压缩</el-button>
-                            <el-button @click="openXtermDialogHandler(scope.row)"  size="mini"  v-if="scope.row.untar">解压</el-button>
+                            <el-button @click="zip(scope.row)"  size="mini"  v-if="!scope.row.tar">压缩</el-button>
+                            <el-button @click="unzip(scope.row)"  size="mini"  v-if="scope.row.tar">解压</el-button>
                             <el-button @click="sftpDelete(scope.row.path)"  size="mini">删除</el-button>
                         </el-button-group>
                     </template>
@@ -154,7 +154,7 @@
 
 <script>
 import { 
-    listServerApi, listFtpApi, deleteFtpApi, createDirFtpApi, 
+    listServerApi, listFtpApi, deleteFtpApi, createDirFtpApi, zipFtpApi, unzipFtpApi, 
     renameFtpApi, modFtpApi, downFtpApi, uploadFtpApi } from '@/api/server'
 import ServerXtermPlan from './ServerXtermPlan.vue'
 import util from '@/lib/util.js'
@@ -208,6 +208,47 @@ export default {
         }
     },
     methods: {
+        zip(row){
+            this.$confirm('确认要压缩该文件吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                zipFtpApi({
+                    id: this.ftpDialog.id,
+                    path: row.path, 
+                }).then(res=>{
+                    this.sftpList(path)
+                    this.$message({
+                        type: 'success',
+                        message: res.msg
+                    });
+                })
+            })
+        },
+        unzip(row){
+            this.$confirm('确认要压缩该文件吗?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                unzipFtpApi({
+                    id: this.ftpDialog.id,
+                    path: row.path, 
+                }).then(res=>{
+                    this.sftpList(path)
+                    this.$message({
+                        type: 'success',
+                        message: res.msg
+                    });
+                })
+            })
+        },
+        determineFileType(path){
+            let fileN = path.split('.')
+            let ext =  fileN[fileN.length - 1];
+            return util.determineFileType(ext, 'compress');
+        },
         uploadFile(path) {
             this.sftp_upload_percentage = 0
             let _this = this
@@ -218,7 +259,6 @@ export default {
                 for (let i = 0; i < fileList.length; i++) {
                     formData.append("files", fileList[i]);
                 }
-                console.log(formData)
                 uploadFtpApi(formData, (progressEvent)=>{
                     const { loaded, total } = progressEvent;
                     if (!total) {
@@ -397,6 +437,8 @@ export default {
         },
         sftpList(path){
             listFtpApi({id: this.ftpDialog.id, path:path}).then(res=>{
+                res.files.forEach(item=>item.tar = this.determineFileType(item.path))
+
                 this.ftpDialog.gridData = res.files
                 this.ftpDialog.path = res.current_dir
             })
