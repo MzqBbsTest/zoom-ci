@@ -95,4 +95,9 @@ const (
 	SSHKEY_UPDATE = "/sshkey/update"
 	SSHKEY_DELETE = "/sshkey/delete"
 	SSHKEY_DETAIL = "/sshkey/detail"
+
+	CMD_LIST   = "/cmd/list"
+	CMD_ADD    = "/cmd/add"
+	CMD_UPDATE = "/cmd/update"
+	CMD_DELETE = "/cmd/delete"
 )

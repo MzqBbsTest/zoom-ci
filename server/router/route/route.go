@@ -115,6 +115,11 @@ func RegisterRoute() {
 		api.POST(reqApi.SSHKEY_UPDATE, ssh_key.SshKeyUpdate)
 		api.POST(reqApi.SSHKEY_DELETE, ssh_key.SshKeyDelete)
 		api.GET(reqApi.SSHKEY_DETAIL, ssh_key.SshKeyDetail)
+
+		api.GET(reqApi.CMD_LIST, server.CmdList)
+		api.POST(reqApi.CMD_ADD, server.CmdSave)
+		api.POST(reqApi.CMD_UPDATE, server.CmdSave)
+		api.POST(reqApi.CMD_DELETE, server.CmdDelete)
 	}
 	RegisterWebRouter()
 }
