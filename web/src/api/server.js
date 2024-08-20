@@ -253,3 +253,23 @@ export function unzipFtpApi(data){
     return post('/server/sftp/unzip', data) 
 }
 
+
+export function listCmdApi(data){
+    return get('/server/cmd/list', data) 
+}
+
+export function deleteCmdApi(data){
+    return post('/server/cmd/delete', data) 
+}
+
+
+export function createCmdApi(data){
+    return post('/server/cmd/create', data) 
+}
+
+export function updateCmdApi(data){
+    return post('/server/sftp/update', data) 
+}
+
+
+
