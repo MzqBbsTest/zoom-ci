@@ -255,20 +255,20 @@ export function unzipFtpApi(data){
 
 
 export function listCmdApi(data){
-    return get('/server/cmd/list', data) 
+    return get('/cmd/list', data) 
 }
 
 export function deleteCmdApi(data){
-    return post('/server/cmd/delete', data) 
+    return post('/cmd/delete', data) 
 }
 
 
 export function createCmdApi(data){
-    return post('/server/cmd/create', data) 
+    return post('/cmd/add', data) 
 }
 
 export function updateCmdApi(data){
-    return post('/server/sftp/update', data) 
+    return post('/cmd/update', data) 
 }
 
 

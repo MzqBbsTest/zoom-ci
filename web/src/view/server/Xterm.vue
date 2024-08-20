@@ -8,8 +8,10 @@
                 <el-table-column width="250" property="name" label="服务器名字"></el-table-column>
                 <el-table-column width="150" property="address" label="操作">
                     <template slot-scope="scope">
-                        <el-button @click="openFtpDialogHandler(scope.row)"  size="small">sftp</el-button>
-                        <el-button @click="openXtermDialogHandler(scope.row)"  size="small">连接</el-button>
+                        <el-button-group>
+                            <el-button @click="openFtpDialogHandler(scope.row)"  size="small">sftp</el-button>
+                            <el-button @click="openXtermDialogHandler(scope.row)"  size="small">连接</el-button>
+                        </el-button-group>
                     </template>
                 </el-table-column>
             </el-table>
@@ -18,7 +20,7 @@
                 layout="prev, pager, next"
                 class="app-pagination"
                 @current-change="currentChangeHandler(1)"
-                :current-page.sync="serverPage.Page"
+                :current-page.sync="serverPage.page"
                 :page-size="serverPage.pageSize"
                 :total="serverPage.total">
             </el-pagination>
@@ -28,12 +30,16 @@
             placement="bottom-start"
             width="400"
             trigger="hover">
-            <el-button >新建</el-button>
+            <el-button  @click="createCmd">新建</el-button>
             <el-table :data="cmdList">
-                <el-table-column width="300" property="date" label="命令标题"></el-table-column>
-                <el-table-column width="100" property="name" label="复制">
+                <el-table-column width="200" property="title" label="命令标题"></el-table-column>
+                <el-table-column width="200" property="id" label="复制">
                     <template slot-scope="scope">
-                        <el-button @click="handleClick(scope.row)" size="small">复制</el-button>
+                        <el-button-group>
+                            <el-button @click="editCmd(scope.row)" size="small">编辑</el-button>
+                            <el-button v-clipboard="scope.row.content" size="small">复制</el-button>
+                            <el-button @click="deleteCmd(scope.row)" size="small">删除</el-button>
+                        </el-button-group>
                     </template>
                 </el-table-column>
             </el-table>
@@ -42,7 +48,7 @@
                 layout="prev, pager, next"
                 class="app-pagination"
                 @current-change="currentChangeHandler(2)"
-                :current-page.sync="cmdPage.Page"
+                :current-page.sync="cmdPage.page"
                 :page-size="cmdPage.pageSize"
                 :total="cmdPage.total">
             </el-pagination>
@@ -137,6 +143,23 @@
                 <el-button type="primary" @click="ftpCreateDir()">确 定</el-button>
             </div>
         </el-dialog>
+
+        <!-- 新建命令 -->
+        <el-dialog :visible.sync="cmdPage.dialog.visible" >
+            <el-form >
+                <input v-model="cmdPage.dialog.id" type="hidden"></input>
+                <el-form-item label="标题" >
+                    <el-input v-model="cmdPage.dialog.title" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="内容" >
+                    <el-input v-model="cmdPage.dialog.content" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="cmdPage.dialog.visible = false">取 消</el-button>
+                <el-button type="primary" @click="cmdPageSave()">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -155,10 +178,12 @@
 <script>
 import { 
     listServerApi, listFtpApi, deleteFtpApi, createDirFtpApi, zipFtpApi, unzipFtpApi, 
+    listCmdApi, deleteCmdApi, createCmdApi, updateCmdApi,
     renameFtpApi, modFtpApi, downFtpApi, uploadFtpApi } from '@/api/server'
 import ServerXtermPlan from './ServerXtermPlan.vue'
 import util from '@/lib/util.js'
 import Vue from "vue";
+import Clipboard from 'clipboard';
 
 export default {
     components: {
@@ -166,15 +191,24 @@ export default {
     },
     data() {
         return {
+            clipboardInstances:[],
             tabIndex: 0,
             xtermTabsValue:0,
             xtermTabs:[],
             cmdPage:{
+                searchInput:"",
                 total: 0,
                 page: 1,
-                pageSize : 10
+                pageSize : 10,
+                dialog:{
+                    visible: false,
+                    id: 0,
+                    title:"",
+                    content:""
+                }
             },
             serverPage:{
+                searchInput:"",
                 total: 0,
                 page: 1,
                 pageSize : 10
@@ -208,6 +242,70 @@ export default {
         }
     },
     methods: {
+        cmdPageSave(){
+            if(this.cmdPage.dialog.id){
+                updateCmdApi({
+                    id: this.cmdPage.dialog.id,
+                    title:this.cmdPage.dialog.title,
+                    content:this.cmdPage.dialog.content
+                }).then(res=>{
+                    this.cmdPage.dialog.visible = false
+                    this.loadCmdData(this.ftpDialog.path)
+                    this.$message({
+                        type: 'success',
+                        message: '保存成功'
+                    });
+                })
+            }else{
+                createCmdApi({
+                    id: 0,
+                    title:this.cmdPage.dialog.title,
+                    content:this.cmdPage.dialog.content
+                }).then(res=>{
+                    this.cmdPage.dialog.visible = false
+                    this.loadCmdData()
+                    this.$message({
+                        type: 'success',
+                        message: '创建成功'
+                    });
+                })
+            }
+        },
+        deleteCmd(row){
+            this.$confirm('此操作将删除命令, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                deleteCmdApi({
+                    id: row.id
+                }).then((res)=>{
+                    this.loadCmdData()
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                });
+
+            }).catch((e) => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });          
+            });
+        },
+        editCmd(row){
+            this.cmdPage.dialog.visible = true
+            this.cmdPage.dialog.id = row.id
+            this.cmdPage.dialog.title = row.title
+            this.cmdPage.dialog.content = row.content
+        },
+        createCmd(){
+            this.cmdPage.dialog.visible = true
+            this.cmdPage.dialog.id = 0
+            this.cmdPage.dialog.title = ""
+            this.cmdPage.dialog.content = ""
+        },
         zip(row){
             this.$confirm('确认要压缩该文件吗?', '提示', {
                 confirmButtonText: '确定',
@@ -480,15 +578,15 @@ export default {
         },
         loadServerData() {
             this.tableServerLoading = true
-
-            listServerApi({ keyword: this.searchInput, offset: this.$root.PageOffset(), limit: this.$root.PageSize }).then(res => {
+            let page = (this.serverPage.page - 1) * this.serverPage.pageSize
+            listServerApi({ keyword: this.serverPage.searchInput, offset: page, limit: this.serverPage.pageSize }).then(res => {
                 this.serverList = res.list
                 this.serverPage.total = res.total
                 this.tableServerLoading = false
                 
+                // 自动打开控制台
                 if(!this.$route.query.server_id){
-                    return;
-                    
+                    return;    
                 }
                 let s = res.list.filter(item => item.id == this.$route.query.server_id)
                 if(!s.length){
@@ -502,7 +600,8 @@ export default {
         },
         loadCmdData() {
             this.tableCmdLoading = true
-            listServerApi({ keyword: this.searchInput, offset: this.$root.PageOffset(), limit: this.$root.PageSize }).then(res => {
+            let page = (this.cmdPage.page - 1) * this.cmdPage.pageSize
+            listCmdApi({ keyword: this.cmdPage.searchInput, offset: page, limit: this.cmdPage.pageSize }).then(res => {
                 this.cmdList = res.list
                 this.cmdPage.total = res.total
                 this.tableCmdLoading = false

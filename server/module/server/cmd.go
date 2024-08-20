@@ -73,6 +73,22 @@ func (s *Cmd) ListByUserId(keyword string, userId, offset, limit int) ([]Cmd, er
 	return CmdList, nil
 }
 
+func (s *Cmd) TotalByUserId(keyword string, userId int) (int, error) {
+	Cmd := model.Cmd{}
+	conds := s.parseWhereConds(keyword)
+	conds = append(conds, model.WhereParam{
+		Field:   "user_id",
+		Prepare: userId,
+	})
+	total, ok := Cmd.Count(model.QueryParam{
+		Where: conds,
+	})
+	if !ok {
+		return 0, errors.New("get Cmd count failed")
+	}
+	return total, nil
+}
+
 func (s *Cmd) List(keyword string, offset, limit int) ([]Cmd, error) {
 	cmd := &model.Cmd{}
 	list, ok := cmd.List(model.QueryParam{

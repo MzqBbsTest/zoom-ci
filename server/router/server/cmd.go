@@ -25,7 +25,7 @@ func CmdList(c *gin.Context) {
 		render.AppError(c, err.Error())
 		return
 	}
-	total, err := cmd.Total(query.Keyword)
+	total, err := cmd.TotalByUserId(query.Keyword, c.GetInt("user_id"))
 	if err != nil {
 		render.AppError(c, err.Error())
 		return

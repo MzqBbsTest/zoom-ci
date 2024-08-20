@@ -11,8 +11,8 @@ import (
 type Cmd struct {
 	ID      int    `gorm:"primary_key"`
 	UserId  int    `gorm:"type:int(11);not null;default:0"`
-	Title   string `gorm:"type:varchar(20);not null;default:''"`
-	Content string `gorm:"type:char(32);not null;default:''"`
+	Title   string `gorm:"type:varchar(50);not null;default:''"`
+	Content string `gorm:"type:varchar(1000);not null;default:''"`
 	Ctime   int    `gorm:"type:int(11);not null;default:0"`
 }
 
