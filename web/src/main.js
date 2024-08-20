@@ -28,7 +28,9 @@ moment.locale(localeLang)
 
 Vue.config.productionTip = false
 Vue.use(ElementUI);
+import ClipboardDirective from './lib/clipboard'; // 假设指令文件放在 src/directives 文件夹下
 
+Vue.directive('clipboard', ClipboardDirective);
 
 new Vue({
     i18n,
