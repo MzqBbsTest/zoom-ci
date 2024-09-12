@@ -18,7 +18,7 @@ func (t *TransferStation) Read(buf []byte) (n int, err error) {
 		return 0, err
 	}
 	copy(buf, buf2)
-	return n, nil
+	return len(buf2), nil
 }
 
 func (t *TransferStation) Write(buf []byte) (n int, err error) {
