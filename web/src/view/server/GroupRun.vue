@@ -160,7 +160,7 @@
 </template>
 
 <script>
-import { listGroupRunApi } from "@/api/server";
+import { listGroupRunApi,addGroupPathApi,updateGroupPathApi,deleteGroupPathApi } from "@/api/server";
 import ServerXterm from './ServerXterm'
 export default {
   components: {
@@ -212,7 +212,7 @@ export default {
         if (this.dialogForm.id) {
           opFn = updateGroupPathApi;
         } else {
-          opFn = newGroupPathApi;
+          opFn = addGroupPathApi ;
         }
         opFn(this.dialogForm)
           .then((res) => {

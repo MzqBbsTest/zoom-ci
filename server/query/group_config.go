@@ -9,7 +9,6 @@ type BindGroupConfig struct {
 	Keyword  string `form:"keyword"`
 	GroupId  int    `form:"group_id"`
 	ServerId int    `form:"server_id"`
-	PathId   int    `form:"path_id"`
 	Offset   int    `form:"offset"`
 	Limit    int    `form:"limit,default=20" binding:"gte=1,lte=999" `
 }

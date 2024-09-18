@@ -102,6 +102,39 @@ export function post(url, data, params, headers) {
     return service(config)
 }
 
+export function put(url, data, params, headers) {
+    if (!params) {
+        params = {}
+    }
+    params._t = new Date().getTime()
+    let config = {
+        method: 'put',
+        url: url,
+        params,
+    }
+    if (data) {
+        if (headers && headers['Content-Type'] == 'multipart/form-data') {
+            config.data = data
+        } else {
+            config.data = qs.stringify(data, { indices: false })
+        }
+    }
+    if (headers) {
+        config.headers = headers
+    }
+
+    config.cancelToken = new CancelToken(function(cancel) {
+        Vue.prototype.$CancelAjaxRequet = function() {
+            cancel()
+        }
+    })
+    if(!config.headers){
+        config.headers = {}
+    }
+    config.headers["Authorization"] = Util.GetLoginToken();
+    return service(config)
+}
+
 export function get(url, params, headers) {
     if (!params) {
         params = {}
@@ -109,6 +142,32 @@ export function get(url, params, headers) {
     params._t = new Date().getTime()
     let config = {
         method: 'get',
+        url: url,
+        params,
+    }
+    if (headers) {
+        config.headers = headers
+    }
+
+    config.cancelToken = new CancelToken(function(cancel) {
+        Vue.prototype.$CancelAjaxRequet = function() {
+            cancel()
+        }
+    })
+    if(!config.headers){
+        config.headers = {}
+    }
+    config.headers["Authorization"] = Util.GetLoginToken();
+    return service(config)
+}
+
+export function del(url, params, headers) {
+    if (!params) {
+        params = {}
+    }
+    params._t = new Date().getTime()
+    let config = {
+        method: 'delete',
         url: url,
         params,
     }

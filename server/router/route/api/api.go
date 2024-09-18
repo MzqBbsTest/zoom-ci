@@ -16,13 +16,18 @@ const (
 	MY_USER_SETTING  = "/user/my/setting"
 	MY_USER_PASSWORD = "/user/my/password"
 
-	SERVER_GROUP_ADD      = "/server/group/add"
-	SERVER_GROUP_LIST     = "/server/group/list"
-	SERVER_GROUP_DELETE   = "/server/group/delete"
-	SERVER_GROUP_DETAIL   = "/server/group/detail"
-	SERVER_GROUP_UPDATE   = "/server/group/update"
-	SERVER_GROUP_PATH     = "/server/group/path"
-	SERVER_GROUP_PATH_ID  = "/server/group/path/:id"
+	SERVER_GROUP_ADD    = "/server/group/add"
+	SERVER_GROUP_LIST   = "/server/group/list"
+	SERVER_GROUP_DELETE = "/server/group/delete"
+	SERVER_GROUP_DETAIL = "/server/group/detail"
+	SERVER_GROUP_UPDATE = "/server/group/update"
+
+	SERVER_GROUP_PATH    = "/server/group/path"
+	SERVER_GROUP_PATH_ID = "/server/group/path/:id"
+
+	SERVER_GROUP_CONFIG    = "/server/group/config"
+	SERVER_GROUP_CONFIG_ID = "/server/group/config/:id"
+
 	SERVER_ADD            = "/server/add"
 	SERVER_UPDATE         = "/server/update"
 	SERVER_LIST           = "/server/list"

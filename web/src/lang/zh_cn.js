@@ -351,4 +351,5 @@ export default {
     'app_config_add':'配置文件添加',
     'server_connect': '测试连接',
     'server_xterm': '控制台',
+    'app_name': '应用名称',
 }

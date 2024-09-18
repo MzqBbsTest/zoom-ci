@@ -1,5 +1,6 @@
 <template>
     <div>
+        <!-- 列表 -->
         <el-card shadow="never">
             <el-row class="app-btn-group">
                 <el-col :span="4">
@@ -60,6 +61,7 @@
             </el-pagination>
         </el-card>
 
+      <!-- 编辑 -->
         <el-dialog :width="$root.DialogLargeWidth" :title="dialogTitle" :visible.sync="dialogVisible" @close="dialogCloseHandler">
             <div class="app-dialog" v-loading="dialogLoading">
                 <el-form ref="dialogRef" :model="dialogForm" size="medium" label-width="80px">
@@ -78,7 +80,7 @@
                         <el-transfer 
                         filterable 
                         :filter-method="filterMethod" 
-                        v-model="dialogForm.servers" 
+                        v-model="dialogForm.servers"
                         :data="servers"
                         target-order=""
                         :titles="[$t('servers'), $t('cluster_servers')]"
@@ -92,9 +94,10 @@
             </div>
         </el-dialog>
 
+      <!-- 组件 -->
         <GroupPath  ></GroupPath>
         <GroupConfig ></GroupConfig>
-        <GroupRun ></GroupRun>
+<!--        <GroupRun ></GroupRun>-->
     </div>
 </template>
 
@@ -102,11 +105,11 @@
 import { listServerApi, newGroupApi, updateGroupApi, listGroupApi, deleteGroupApi, detailGroupApi } from '@/api/server'
 import GroupPath from './GroupPath.vue'
 import GroupConfig from './GroupConfig.vue'
-import GroupRun from './GroupRun.vue'
+// import GroupRun from './GroupRun.vue'
 export default {
     components: {
         GroupPath,
-        GroupRun,
+        // GroupRun,
         GroupConfig
     },
     data() {

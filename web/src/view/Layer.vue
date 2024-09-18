@@ -37,7 +37,7 @@
         <section class="layer-container">
             <aside class="layer-aside">
                 <ScrollBar>
-                    <el-menu class="aside-menu" :default-active="activeMenu" :router="true" :unique-opened="true">
+                    <el-menu class="aside-menu" :default-active="activeMenu" :router="false" :unique-opened="true">
                         <template v-for="menu in AppMenu">
                             <el-submenu
                                     v-if="menu.children && (menu.children.length > 1 || (menu.children.length == 1 && !menu.children[0].meta.single))"
@@ -47,7 +47,7 @@
                                           :class="menu.meta.icon"></span><span>{{ menu.meta.title }}</span>
                                 </template>
                                 <template v-for="childMenu in menu.children">
-                                    <el-menu-item v-if="!(childMenu.meta && childMenu.meta.hide)"
+                                    <el-menu-item v-if="!(childMenu.meta && childMenu.meta.hide)"  @click="openMenu(childMenu)"
                                                   :route="{name: childMenu.name}" :index="childMenu.name"
                                                   :key="childMenu.name">
                                         <i class="iconfont small left">
@@ -60,7 +60,7 @@
                                     </el-menu-item>
                                 </template>
                             </el-submenu>
-                            <el-menu-item :route="{name: menu.children[0].name}"
+                            <el-menu-item :route="{name: menu.children[0].name}"  @click="openMenu(menu.children[0])"
                                           v-else-if="menu.children && menu.children.length == 1"
                                           :index="menu.children[0].name" :key="menu.children[0].name">
                                 <i v-if="menu.children[0].meta.icon" class="iconfont left"
@@ -163,6 +163,7 @@
 <script>
     import ScrollBar from '@/component/ScrollBar';
     import {routerMap} from '@/router'
+    import router from '@/router'
     import Code from '@/lib/code'
     import util from '@/lib/util'
     import {loginStatusApi, logoutApi} from '@/api/login'
@@ -213,7 +214,17 @@
             ScrollBar,
         },
         methods: {
-            userSettingHandler(cmd) {
+          openMenu(menu){
+            if(menu.name == router.history.current.name){
+              return
+            }
+            if(menu.name == 'server_xterm'){
+              window.open("#/xterm/xterm", '_blank')
+              return;
+            }
+            router.push({name: menu.name})
+          },
+          userSettingHandler(cmd) {
                 switch (cmd) {
                     case 'logout':
                         logoutApi().then(res => {
