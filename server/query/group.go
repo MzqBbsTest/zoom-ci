@@ -1,6 +1,9 @@
 package query
 
-import "github.com/zoom-ci/zoom-ci/server/model"
+import (
+	"fmt"
+	"github.com/zoom-ci/zoom-ci/server/model"
+)
 
 type BindGroup struct {
 	Keyword string `form:"keyword"`
