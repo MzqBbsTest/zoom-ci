@@ -531,11 +531,11 @@ func ApplyProjectDetail(c *gin.Context) {
 			render.AppError(c, err.Error())
 			return
 		}
-		serverList, err = server.ServerGetListByGroupIds(proj.OnlineCluster)
-		if err != nil {
-			render.AppError(c, err.Error())
-			return
-		}
+		//serverList, err = server.ServerGetListByGroupIds(proj.OnlineCluster)
+		//if err != nil {
+		//	render.AppError(c, err.Error())
+		//	return
+		//}
 	}
 
 	restProj := map[string]interface{}{

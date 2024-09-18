@@ -63,12 +63,20 @@ func (g *Group) GroupGetMapByIds(ids []int) (map[int]Group, error) {
 }
 
 func (g *Group) Create() error {
-	serverGroup := model.Group{
+	group := model.Group{
 		Name: g.Name,
 	}
-	if ok := serverGroup.Create(); !ok {
+	if ok := group.Create(); !ok {
 		return errors.New("create server group data failed")
 	}
+	for _, id := range g.ServerIds {
+		serverGroup := model.ServerGroup{
+			ServerId: id,
+			GroupId:  group.ID,
+		}
+		serverGroup.Create()
+	}
+
 	return nil
 }
 
@@ -206,7 +214,7 @@ func (g *Group) Detail() error {
 		return errors.New("get server group list failed")
 	}
 
-	serverIds, err := utils.Pluck[model.ServerGroup, int](serverGroupList, "id")
+	serverIds, err := utils.Pluck[model.ServerGroup, int](serverGroupList, "ServerId")
 	if err != nil {
 		return err
 	}

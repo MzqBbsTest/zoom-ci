@@ -22,30 +22,6 @@ export function updateGroupApi(data) {
 }
 
 export function listGroupPathApi(data) {
-    console.log('/server/group/path')
-    return Promise.resolve({
-        "list": [
-            {
-                "id": 2,
-                "group_id": 2,
-
-                "server_id":0,
-                "name": "全局",
-                "path":"",
-                "ctime": 1713167856
-            },
-            {
-                "id": 3,
-                "group_id": 2,
-      
-                "server_id":1,
-                "name": "92",
-                "path":"/",
-                "ctime": 1713167856
-            }
-        ],
-        "total": 3
-    });
     return get('/server/group/path', data)
 }
 
@@ -62,22 +38,22 @@ export function deleteGroupPathApi(data) {
 }
 
 export function listGroupConfigApi(params) {
-    return Promise.resolve({
-        "list": [
-            {
-                "id": 3,
-                "name": "nginx.conf",
-                "file": "/nginx.conf",
-                "ctime": "2024-05-13"
-            },
-            {
-                "id": 1,
-                "name": "php.conf",
-                "file": "/php.conf",
-                "ctime": "2024-05-13"
-            },
-        ],
-    });
+    // return Promise.resolve({
+    //     "list": [
+    //         {
+    //             "id": 3,
+    //             "name": "nginx.conf",
+    //             "file": "/nginx.conf",
+    //             "ctime": "2024-05-13"
+    //         },
+    //         {
+    //             "id": 1,
+    //             "name": "php.conf",
+    //             "file": "/php.conf",
+    //             "ctime": "2024-05-13"
+    //         },
+    //     ],
+    // });
     return get('/server/group/config/list', params)
 }
 
@@ -95,58 +71,26 @@ export function updateServerApi(data) {
 }
 
 export function listServerApi(params) {
-    return Promise.resolve({
-        "list": [
-            {
-                "id": 3,
-                "group_id": 0,
-                "group_name": "",
-                "name": "101",
-                "ip": "192.168.1.101",
-                "ssh_port": 22,
-                "ctime": 1713167856
-            },
-            {
-                "id": 2,
-                "group_id": 4,
-                "group_name": "web-nginx-test",
-                "name": "130",
-                "ip": "192.168.1.130",
-                "ssh_port": 22,
-                "ctime": 1713162409
-            },
-            {
-                "id": 1,
-                "group_id": 3,
-                "group_name": "api-nginx-test",
-                "name": "102",
-                "ip": "192.167.1.102",
-                "ssh_port": 22,
-                "ctime": 1706180377
-            }
-        ],
-        "total": 3
-    })
     return get('/server/list', params)
 }
 
 export function listGroupRunApi(params){
-    return Promise.resolve({
-        "list": [
-            {
-                "id": 3,
-                "name": "nginx.conf",
-                "status": "1",
-                "ctime": "2024-05-13"
-            },
-            {
-                "id": 1,
-                "name": "php.conf",
-                "status": "2",
-                "ctime": "2024-05-13"
-            },
-        ],
-    });
+    // return Promise.resolve({
+    //     "list": [
+    //         {
+    //             "id": 3,
+    //             "name": "nginx.conf",
+    //             "status": "1",
+    //             "ctime": "2024-05-13"
+    //         },
+    //         {
+    //             "id": 1,
+    //             "name": "php.conf",
+    //             "status": "2",
+    //             "ctime": "2024-05-13"
+    //         },
+    //     ],
+    // });
     return get('/server/group/config/list', params)
 }
 

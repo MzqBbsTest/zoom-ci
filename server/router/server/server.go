@@ -7,27 +7,30 @@ package server
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/zoom-ci/zoom-ci/server/form"
 	"github.com/zoom-ci/zoom-ci/server/module/server"
+	query2 "github.com/zoom-ci/zoom-ci/server/query"
 	"github.com/zoom-ci/zoom-ci/server/render"
 	"github.com/zoom-ci/zoom-ci/util/gostring"
 	"golang.org/x/crypto/ssh"
 )
 
-type QueryBind struct {
-	Keyword string `form:"keyword"`
-	Offset  int    `form:"offset"`
-	Limit   int    `form:"limit" binding:"required,gte=1,lte=999"`
-}
+//type QueryBind struct {
+//	Keyword string `form:"keyword"`
+//	GroupId string `form:"group_id"`
+//	Offset  int    `form:"offset"`
+//	Limit   int    `form:"limit,default=20" binding:"gte=1,lte=999" `
+//}
 
-type ServerForm struct {
-	GroupId  int    `form:"group_id" default="0"`
-	Name     string `form:"name" binding:"required"`
-	Ip       string `form:"ip" binding:"required"`
-	SSHPort  int    `form:"ssh_port" binding:"required,gte=1,lte=65535"`
-	User     string `form:"user" `
-	Password string `form:"password" `
-	SshKeyId int    `form:"sshkey_id"`
-}
+//type ServerForm struct {
+//	GroupId  int    `form:"group_id"`
+//	Name     string `form:"name" binding:"required"`
+//	Ip       string `form:"ip" binding:"required"`
+//	SSHPort  int    `form:"ssh_port,default=22" binding:"gte=1,lte=65535"`
+//	User     string `form:"user" `
+//	Password string `form:"password" `
+//	SshKeyId int    `form:"sshkey_id"`
+//}
 
 func ServerAdd(c *gin.Context) {
 	serverCreateOrUpdate(c, 0)
@@ -43,14 +46,13 @@ func ServerUpdate(c *gin.Context) {
 }
 
 func serverCreateOrUpdate(c *gin.Context, id int) {
-	var serverForm ServerForm
+	var serverForm form.ServerForm
 	if err := c.ShouldBind(&serverForm); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
 	server := &server.Server{
 		ID:       id,
-		GroupId:  serverForm.GroupId,
 		Name:     serverForm.Name,
 		Ip:       serverForm.Ip,
 		SSHPort:  serverForm.SSHPort,
@@ -66,13 +68,13 @@ func serverCreateOrUpdate(c *gin.Context, id int) {
 }
 
 func ServerList(c *gin.Context) {
-	var query QueryBind
+	var query query2.BindServer
 	if err := c.ShouldBind(&query); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
 	ser := &server.Server{}
-	list, err := ser.List(query.Keyword, query.Offset, query.Limit)
+	list, err := ser.List(&query)
 	if err != nil {
 		render.AppError(c, err.Error())
 		return
@@ -119,12 +121,12 @@ func ServerDetail(c *gin.Context) {
 		return
 	}
 
-	group := &server.Group{
-		ID: ser.GroupId,
-	}
-	if err := group.Detail(); err == nil {
-		ser.GroupName = group.Name
-	}
+	//group := &server.Group{
+	//	ID: ser.GroupId,
+	//}
+	//if err := group.Detail(); err == nil {
+	//	ser.GroupName = group.Name
+	//}
 
 	render.JSON(c, ser)
 }

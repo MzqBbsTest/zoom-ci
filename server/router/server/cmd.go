@@ -14,25 +14,25 @@ type CmdForm struct {
 }
 
 func CmdList(c *gin.Context) {
-	var query QueryBind
-	if err := c.ShouldBind(&query); err != nil {
-		render.ParamError(c, err.Error())
-		return
-	}
-	cmd := &server.Cmd{}
-	list, err := cmd.ListByUserId(query.Keyword, c.GetInt("user_id"), query.Offset, query.Limit)
-	if err != nil {
-		render.AppError(c, err.Error())
-		return
-	}
-	total, err := cmd.TotalByUserId(query.Keyword, c.GetInt("user_id"))
-	if err != nil {
-		render.AppError(c, err.Error())
-		return
-	}
+	//var query QueryBind
+	//if err := c.ShouldBind(&query); err != nil {
+	//	render.ParamError(c, err.Error())
+	//	return
+	//}
+	//cmd := &server.Cmd{}
+	//list, err := cmd.ListByUserId(query.Keyword, c.GetInt("user_id"), query.Offset, query.Limit)
+	//if err != nil {
+	//	render.AppError(c, err.Error())
+	//	return
+	//}
+	//total, err := cmd.TotalByUserId(query.Keyword, c.GetInt("user_id"))
+	//if err != nil {
+	//	render.AppError(c, err.Error())
+	//	return
+	//}
 	render.JSON(c, gin.H{
-		"list":  list,
-		"total": total,
+		//"list":  list,
+		//"total": total,
 	})
 }
 

@@ -304,11 +304,11 @@ func DeployStart(c *gin.Context) {
 
 	if proj.ProjectType == 1 {
 		// cluster servers
-		serverList, err := server.ServerGetListByGroupIds(proj.OnlineCluster)
-		if err != nil {
-			render.AppError(c, err.Error())
-			return
-		}
+		//serverList, err := server.ServerGetListByGroupIds(proj.OnlineCluster)
+		//if err != nil {
+		//	render.AppError(c, err.Error())
+		//	return
+		//}
 
 		d := &deploy.Deploy{
 			ApplyId: id,
@@ -319,9 +319,9 @@ func DeployStart(c *gin.Context) {
 		}
 
 		groupSrvs := map[int][]server.Server{}
-		for _, srv := range serverList {
-			groupSrvs[srv.GroupId] = append(groupSrvs[srv.GroupId], srv)
-		}
+		//for _, srv := range serverList {
+		//groupSrvs[srv.GroupId] = append(groupSrvs[srv.GroupId], srv)
+		//}
 
 		for _, gid := range proj.OnlineCluster {
 			gsrv, exists := groupSrvs[gid]

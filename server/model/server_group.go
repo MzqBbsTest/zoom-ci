@@ -4,10 +4,13 @@
 
 package model
 
+import "time"
+
 type ServerGroup struct {
 	ID       int `gorm:"primary_key"`
 	ServerId int `gorm:"type:int(11);not null;default:0"`
 	GroupId  int `gorm:"type:int(11);not null;default:0"`
+	Ctime    int `json:"ctime"`
 }
 
 func (m *ServerGroup) TableName() string {
@@ -15,6 +18,7 @@ func (m *ServerGroup) TableName() string {
 }
 
 func (m *ServerGroup) Create() bool {
+	m.Ctime = int(time.Now().Unix())
 	return Create(m)
 }
 
@@ -40,4 +44,8 @@ func (m *ServerGroup) Delete() bool {
 
 func (m *ServerGroup) Get(id int) bool {
 	return GetByPk(m, id)
+}
+
+func (m *ServerGroup) DeleteWhere(query QueryParam) bool {
+	return Delete(m, query)
 }

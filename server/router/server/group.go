@@ -20,7 +20,8 @@ func GroupAdd(c *gin.Context) {
 		return
 	}
 	group := &server.Group{
-		Name: groupForm.Name,
+		Name:      groupForm.Name,
+		ServerIds: groupForm.Servers,
 	}
 	if err := group.Create(); err != nil {
 		render.AppError(c, err.Error())

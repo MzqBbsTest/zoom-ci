@@ -40,7 +40,8 @@ func RegisterRoute() {
 		api.GET(reqApi.SERVER_GROUP_DETAIL, server.GroupDetail)
 		api.POST(reqApi.SERVER_GROUP_UPDATE, server.GroupUpdate)
 		api.GET(reqApi.SERVER_GROUP_PATH, server.GroupPath)
-		api.POST(reqApi.SERVER_GROUP_PATH, server.GroupPathAdd)
+		api.POST(reqApi.SERVER_GROUP_PATH, server.GroupPathSave)
+		api.OPTIONS(reqApi.SERVER_GROUP_PATH, server.GroupPathSave)
 
 		api.POST(reqApi.SERVER_ADD, server.ServerAdd)
 		api.POST(reqApi.SERVER_UPDATE, server.ServerUpdate)

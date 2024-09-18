@@ -10,7 +10,6 @@ import (
 
 type Server struct {
 	ID       int    `gorm:"primary_key"`
-	GroupId  int    `gorm:"type:int(11);not null;default:0"`
 	Name     string `gorm:"type:varchar(100);not null;default:''"`
 	Ip       string `gorm:"type:varchar(100);not null;default:''"`
 	SSHPort  int    `gorm:"type:int(11);not null;default:0"`
