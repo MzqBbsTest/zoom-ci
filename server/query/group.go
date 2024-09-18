@@ -13,7 +13,7 @@ func ParseGroupQuery(c *BindGroup) []model.WhereParam {
 	var builder WhereParamBuilder
 
 	if len(c.Keyword) > 0 {
-		builder.AddCondition("name", "like", c.Keyword)
+		builder.AddCondition("name", "like", fmt.Sprintf("%%%s%%", c.Keyword))
 	}
 
 	if c.GroupId > 0 {

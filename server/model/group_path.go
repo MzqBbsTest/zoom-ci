@@ -9,12 +9,12 @@ import (
 )
 
 type GroupPath struct {
-	ID   int    `gorm:"primary_key"`
-	Name string `gorm:"type:varchar(255);not null;default:''"`
-	Path string `gorm:"type:varchar(255);not null;default:''"`
-	//ServerIds int `gorm:"type:int(11);not null;default:0"`
-	//ServerGroupId  int `gorm:"type:int(11);not null;default:0"`
-	Ctime int `gorm:"type:int(11);not null;default:0"`
+	ID       int    `gorm:"primary_key"`
+	Name     string `gorm:"type:varchar(255);not null;default:''"`
+	Path     string `gorm:"type:varchar(255);not null;default:''"`
+	ServerId int    `gorm:"type:int(11);not null;default:0"`
+	GroupId  int    `gorm:"type:int(11);not null;default:0"`
+	Ctime    int    `gorm:"type:int(11);not null;default:0"`
 }
 
 func (m *GroupPath) TableName() string {

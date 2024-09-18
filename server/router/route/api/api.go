@@ -22,6 +22,7 @@ const (
 	SERVER_GROUP_DETAIL   = "/server/group/detail"
 	SERVER_GROUP_UPDATE   = "/server/group/update"
 	SERVER_GROUP_PATH     = "/server/group/path"
+	SERVER_GROUP_PATH_ID  = "/server/group/path/:id"
 	SERVER_ADD            = "/server/add"
 	SERVER_UPDATE         = "/server/update"
 	SERVER_LIST           = "/server/list"

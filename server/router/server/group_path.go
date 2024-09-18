@@ -13,7 +13,8 @@ import (
 )
 
 func GroupPath(c *gin.Context) {
-	var query query2.BindPathServer
+
+	var query query2.BindGroupPath
 	if err := c.ShouldBind(&query); err != nil {
 		render.ParamError(c, err.Error())
 		return
@@ -39,6 +40,7 @@ func GroupPath(c *gin.Context) {
 }
 
 func GroupPathSave(c *gin.Context) {
+
 	var groupForm form.GroupServerPathForm
 	if err := c.ShouldBind(&groupForm); err != nil {
 		render.ParamError(c, err.Error())
@@ -46,11 +48,11 @@ func GroupPathSave(c *gin.Context) {
 	}
 
 	groupPath := server.GroupPath{
-		ID:            groupForm.PathId,
-		Path:          groupForm.Path,
-		Name:          groupForm.Name,
-		ServerGroupId: groupForm.GroupId,
-		ServerIds:     groupForm.ServerIds,
+		ID:       groupForm.Id,
+		Path:     groupForm.Path,
+		Name:     groupForm.Name,
+		GroupId:  groupForm.GroupId,
+		ServerId: groupForm.ServerId,
 	}
 
 	if err := groupPath.Save(); err != nil {

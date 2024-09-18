@@ -6,10 +6,11 @@ import (
 )
 
 type BindServer struct {
-	Keyword  string `form:"keyword"`
-	ServerId int    `form:"server_id"`
-	Offset   int    `form:"offset"`
-	Limit    int    `form:"limit,default=20" binding:"gte=1,lte=999" `
+	Keyword   string `form:"keyword"`
+	ServerId  int    `form:"server_id"`
+	ServerIds []int  `form:"server_ids"`
+	Offset    int    `form:"offset"`
+	Limit     int    `form:"limit,default=20" binding:"gte=1,lte=999" `
 }
 
 func ParseServerQuery(c *BindServer) []model.WhereParam {
@@ -21,6 +22,11 @@ func ParseServerQuery(c *BindServer) []model.WhereParam {
 
 	if c.ServerId > 0 {
 		builder.AddCondition("id", "=", c.ServerId)
+	}
+
+	if len(c.ServerIds) > 0 {
+		builder.AddCondition("id", "IN", c.ServerIds)
+
 	}
 
 	return builder.GetParams()

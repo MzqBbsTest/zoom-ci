@@ -117,10 +117,13 @@ func (s *Server) List(query *query2.BindServer) ([]Server, error) {
 	return serverList, nil
 }
 
-func (s *Server) Total(keyword string) (int, error) {
+func (s *Server) Total(query *query2.BindServer) (int, error) {
+
+	where := query2.ParseServerQuery(query)
+
 	server := model.Server{}
 	total, ok := server.Count(model.QueryParam{
-		Where: s.parseWhereConds(keyword),
+		Where: where,
 	})
 	if !ok {
 		return 0, errors.New("get server count failed")

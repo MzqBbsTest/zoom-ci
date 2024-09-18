@@ -1,6 +1,7 @@
 package form
 
 type ServerForm struct {
+	Id       int    `form:"id"`
 	GroupId  int    `form:"group_id"`
 	Name     string `form:"name" binding:"required"`
 	Ip       string `form:"ip" binding:"required"`

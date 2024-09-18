@@ -32,27 +32,14 @@ import (
 //	SshKeyId int    `form:"sshkey_id"`
 //}
 
-func ServerAdd(c *gin.Context) {
-	serverCreateOrUpdate(c, 0)
-}
-
-func ServerUpdate(c *gin.Context) {
-	id := gostring.Str2Int(c.PostForm("id"))
-	if id == 0 {
-		render.ParamError(c, "id cannot be empty")
-		return
-	}
-	serverCreateOrUpdate(c, id)
-}
-
-func serverCreateOrUpdate(c *gin.Context, id int) {
+func ServerSave(c *gin.Context) {
 	var serverForm form.ServerForm
 	if err := c.ShouldBind(&serverForm); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
+
 	server := &server.Server{
-		ID:       id,
 		Name:     serverForm.Name,
 		Ip:       serverForm.Ip,
 		SSHPort:  serverForm.SSHPort,
@@ -60,6 +47,12 @@ func serverCreateOrUpdate(c *gin.Context, id int) {
 		Password: serverForm.Password,
 		SshKeyId: serverForm.SshKeyId,
 	}
+
+	id := gostring.Str2Int(c.PostForm("id"))
+	if id > 0 {
+		server.ID = serverForm.Id
+	}
+
 	if err := server.CreateOrUpdate(); err != nil {
 		render.AppError(c, err.Error())
 		return
@@ -73,6 +66,23 @@ func ServerList(c *gin.Context) {
 		render.ParamError(c, err.Error())
 		return
 	}
+
+	bindGroupServer := query2.BindGroupServer{}
+	if err := c.ShouldBind(&bindGroupServer); err != nil {
+		render.ParamError(c, err.Error())
+		return
+	}
+
+	if bindGroupServer.GroupId > 0 {
+		serverGroup := server.ServerGroup{}
+		serverIds, err := serverGroup.GetServerIds(&bindGroupServer)
+		if err != nil {
+			render.ParamError(c, err.Error())
+			return
+		}
+		query.ServerIds = serverIds
+	}
+
 	ser := &server.Server{}
 	list, err := ser.List(&query)
 	if err != nil {
@@ -80,7 +90,7 @@ func ServerList(c *gin.Context) {
 		return
 	}
 
-	total, err := ser.Total(query.Keyword)
+	total, err := ser.Total(&query)
 	if err != nil {
 		render.AppError(c, err.Error())
 		return

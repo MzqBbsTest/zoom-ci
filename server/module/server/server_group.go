@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/zoom-ci/zoom-ci/server/model"
 	query2 "github.com/zoom-ci/zoom-ci/server/query"
+	"github.com/zoom-ci/zoom-ci/util/utils"
 )
 
 type ServerGroup struct {
@@ -36,4 +37,24 @@ func (g *ServerGroup) Delete(bind *query2.BindGroupServer) bool {
 		Where: where,
 	})
 	return ok
+}
+
+func (g *ServerGroup) GetServerIds(bind *query2.BindGroupServer) ([]int, error) {
+
+	where := query2.ParseGroupServerQuery(bind)
+	serverGroup := model.ServerGroup{}
+	serverGroupList, ok := serverGroup.List(model.QueryParam{
+		Where: where,
+	})
+
+	if !ok {
+		return nil, errors.New("get server group list failed")
+	}
+
+	serverIds, err := utils.Pluck[model.ServerGroup, int](serverGroupList, "ServerId")
+	if err != nil {
+		return nil, err
+	}
+
+	return serverIds, nil
 }
