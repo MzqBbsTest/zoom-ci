@@ -6,9 +6,9 @@ package server
 
 import (
 	"errors"
-	"fmt"
 	"github.com/zoom-ci/zoom-ci/server/model"
-	"github.com/zoom-ci/zoom-ci/util/gois"
+	query2 "github.com/zoom-ci/zoom-ci/server/query"
+	"github.com/zoom-ci/zoom-ci/util/utils"
 )
 
 type Group struct {
@@ -36,7 +36,10 @@ func (g *Group) GroupGetMapByIds(ids []int) (map[int]Group, error) {
 		return nil, errors.New("get server group list failed")
 	}
 
-	serverGroupList, err := g.GetGroupServers(ids)
+	serverGroup := ServerGroup{}
+	serverGroupList, err := serverGroup.List(&query2.BindGroupServer{
+		GroupIds: ids,
+	})
 	if err != nil {
 		return nil, errors.New("get server group list failed")
 	}
@@ -44,10 +47,9 @@ func (g *Group) GroupGetMapByIds(ids []int) (map[int]Group, error) {
 	groupMap := make(map[int]Group)
 	for _, l := range groupList {
 		var serverIds []int
-		for _, server := range serverGroupList {
-			if l.ID == server.GroupId {
-				serverIds = append(serverIds, server.ServerId)
-			}
+		serverIds, err = utils.Pluck[model.ServerGroup, int](serverGroupList, "ServerId")
+		if err != nil {
+			continue
 		}
 		groupMap[l.ID] = Group{
 			ID:        l.ID,
@@ -79,15 +81,28 @@ func (g *Group) Update() error {
 		return errors.New("update server group data failed")
 	}
 
-	servers, err := g.GetGroupServers([]int{
-		g.ID,
+	serverGroup := ServerGroup{}
+	serverGroupList, err := serverGroup.List(&query2.BindGroupServer{
+		GroupId: g.ID,
 	})
+
 	if err != nil {
 		return err
 	}
 
-	for _, server := range servers {
-		server.Delete()
+	serverIds, err := utils.Pluck[model.ServerGroup, int](serverGroupList, "server_id")
+	if err != nil {
+		return err
+	}
+
+	serverIds2 := utils.Difference(serverIds, g.ServerIds)
+
+	ok := serverGroup.Delete(&query2.BindGroupServer{
+		GroupId:   g.ID,
+		ServerIds: serverIds2,
+	})
+	if !ok {
+		return errors.New("delete is error")
 	}
 
 	for _, id := range g.ServerIds {
@@ -101,31 +116,16 @@ func (g *Group) Update() error {
 	return nil
 }
 
-func (g *Group) GetGroupServers(ids []int) ([]model.ServerGroup, error) {
-	serverGroup := model.ServerGroup{}
-	serverGroupList, ok := serverGroup.List(model.QueryParam{
-		Where: []model.WhereParam{
-			model.WhereParam{
-				Field:   "group_id",
-				Tag:     "IN",
-				Prepare: ids,
-			},
-		},
-	})
-	if !ok {
-		return nil, errors.New("get server group list failed")
-	}
-	return serverGroupList, nil
-}
+func (g *Group) List(bind *query2.BindGroup) ([]Group, error) {
 
-func (g *Group) List(keyword string, offset, limit int) ([]Group, error) {
+	where := query2.ParseGroupQuery(bind)
 	group := model.Group{}
 	list, ok := group.List(model.QueryParam{
 		Fields: "id, name, ctime",
-		Offset: offset,
-		Limit:  limit,
+		Offset: bind.Offset,
+		Limit:  bind.Limit,
 		Order:  "id DESC",
-		Where:  g.parseWhereConds(keyword),
+		Where:  where,
 	})
 	if !ok {
 		return nil, errors.New("get server group list failed")
@@ -135,7 +135,9 @@ func (g *Group) List(keyword string, offset, limit int) ([]Group, error) {
 	for _, group := range list {
 		ids = append(ids, group.ID)
 	}
-	serverGroupList, err := g.GetGroupServers(ids)
+
+	serverGroup := ServerGroup{}
+	serverGroupList, err := serverGroup.List(&query2.BindGroupServer{GroupIds: ids})
 	if err != nil {
 		return nil, errors.New("get server group list failed")
 	}
@@ -155,17 +157,22 @@ func (g *Group) List(keyword string, offset, limit int) ([]Group, error) {
 			ServerIds: serverIds,
 		})
 	}
+
 	return groupList, nil
 }
 
-func (g *Group) Total(keyword string) (int, error) {
+func (g *Group) Total(bind *query2.BindGroup) (int, error) {
+
+	where := query2.ParseGroupQuery(bind)
 	group := model.Group{}
 	total, ok := group.Count(model.QueryParam{
-		Where: g.parseWhereConds(keyword),
+		Where: where,
 	})
+
 	if !ok {
 		return 0, errors.New("get server group count failed")
 	}
+
 	return total, nil
 }
 
@@ -191,32 +198,20 @@ func (g *Group) Detail() error {
 	g.ID = group.ID
 	g.Name = group.Name
 	g.Ctime = group.Ctime
-	serverGroupList, err := g.GetGroupServers([]int{g.ID})
+
+	serverGroup := ServerGroup{}
+
+	serverGroupList, err := serverGroup.List(&query2.BindGroupServer{GroupId: g.ID})
 	if err != nil {
 		return errors.New("get server group list failed")
 	}
-	for _, serverGroup := range serverGroupList {
-		g.ServerIds = append(g.ServerIds, serverGroup.ServerId)
+
+	serverIds, err := utils.Pluck[model.ServerGroup, int](serverGroupList, "id")
+	if err != nil {
+		return err
 	}
+
+	g.ServerIds = serverIds
 
 	return nil
-}
-
-func (g *Group) parseWhereConds(keyword string) []model.WhereParam {
-	var where []model.WhereParam
-	if keyword != "" {
-		if gois.IsInteger(keyword) {
-			where = append(where, model.WhereParam{
-				Field:   "id",
-				Prepare: keyword,
-			})
-		} else {
-			where = append(where, model.WhereParam{
-				Field:   "name",
-				Tag:     "LIKE",
-				Prepare: fmt.Sprintf("%%%s%%", keyword),
-			})
-		}
-	}
-	return where
 }

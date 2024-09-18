@@ -6,19 +6,15 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/zoom-ci/zoom-ci/server/form"
 	"github.com/zoom-ci/zoom-ci/server/module/server"
+	query2 "github.com/zoom-ci/zoom-ci/server/query"
 	"github.com/zoom-ci/zoom-ci/server/render"
 	"github.com/zoom-ci/zoom-ci/util/gostring"
 )
 
-type GroupForm struct {
-	ID      int    `form:"id"`
-	Name    string `form:"name" binding:"required"`
-	Servers []int  `form:"servers" `
-}
-
 func GroupAdd(c *gin.Context) {
-	var groupForm GroupForm
+	var groupForm form.FormGroup
 	if err := c.ShouldBind(&groupForm); err != nil {
 		render.ParamError(c, err.Error())
 		return
@@ -34,18 +30,18 @@ func GroupAdd(c *gin.Context) {
 }
 
 func GroupList(c *gin.Context) {
-	var query QueryBind
+	var query query2.BindGroup
 	if err := c.ShouldBind(&query); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
 	group := &server.Group{}
-	list, err := group.List(query.Keyword, query.Offset, query.Limit)
+	list, err := group.List(&query)
 	if err != nil {
 		render.AppError(c, err.Error())
 		return
 	}
-	total, err := group.Total(query.Keyword)
+	total, err := group.Total(&query)
 	if err != nil {
 		render.AppError(c, err.Error())
 		return
@@ -89,7 +85,7 @@ func GroupDetail(c *gin.Context) {
 }
 
 func GroupUpdate(c *gin.Context) {
-	var groupForm GroupForm
+	var groupForm form.FormGroup
 	if err := c.ShouldBind(&groupForm); err != nil {
 		render.ParamError(c, err.Error())
 		return
@@ -102,48 +98,6 @@ func GroupUpdate(c *gin.Context) {
 		ID:        groupForm.ID,
 		Name:      groupForm.Name,
 		ServerIds: groupForm.Servers,
-	}
-	if err := group.Update(); err != nil {
-		render.AppError(c, err.Error())
-		return
-	}
-	render.Success(c)
-}
-
-func GroupPath(c *gin.Context) {
-	var groupForm GroupForm
-	if err := c.ShouldBind(&groupForm); err != nil {
-		render.ParamError(c, err.Error())
-		return
-	}
-	if groupForm.ID == 0 {
-		render.ParamError(c, "id cannot be empty")
-		return
-	}
-	group := &server.Group{
-		ID:   groupForm.ID,
-		Name: groupForm.Name,
-	}
-	if err := group.Update(); err != nil {
-		render.AppError(c, err.Error())
-		return
-	}
-	render.Success(c)
-}
-
-func GroupPathAdd(c *gin.Context) {
-	var groupForm GroupForm
-	if err := c.ShouldBind(&groupForm); err != nil {
-		render.ParamError(c, err.Error())
-		return
-	}
-	if groupForm.ID == 0 {
-		render.ParamError(c, "id cannot be empty")
-		return
-	}
-	group := &server.Group{
-		ID:   groupForm.ID,
-		Name: groupForm.Name,
 	}
 	if err := group.Update(); err != nil {
 		render.AppError(c, err.Error())
