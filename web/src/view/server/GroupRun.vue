@@ -8,34 +8,41 @@
     >
       <div class="app-dialog" v-loading="dialogLoading">
         <el-card shadow="never">
-          <el-row class="app-btn-group">
-            <el-col :span="4">
-              {{ $t('start_user') }}:
-              <el-input
-                  v-model="start_user">
-              </el-input>
-            </el-col>
-            <el-col :span="24">
-              {{ $t('start_command') }}:
-              <el-input
-                  v-model="start_command">
-              </el-input>
-            </el-col>
-          </el-row>
+<!--          <el-row class="app-btn-group">-->
+<!--            <el-col :span="4">-->
+<!--              {{ $t('start_user') }}:-->
+<!--              <el-input-->
+<!--                  v-model="start_user">-->
+<!--              </el-input>-->
+<!--            </el-col>-->
+<!--            <el-col :span="24">-->
+<!--              {{ $t('start_command') }}:-->
+<!--              <el-input-->
+<!--                  v-model="start_command">-->
+<!--              </el-input>-->
+<!--            </el-col>-->
+<!--          </el-row>-->
           <el-row class="app-btn-group">
             <el-col :span="8">
               <el-button
+                  @click="openAddDialogHandler()"
                   v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_NEW)"
                   type="primary"
                   size="medium"
-                  icon="iconfont left small ">{{ $t("start_all") }}
+                  icon="iconfont left small ">{{ $t("start_edit") }}
               </el-button>
-              <el-button
-                  v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_NEW)"
-                  type="danger"
-                  size="medium"
-                  icon="iconfont left small ">{{ $t("stop_all") }}
-              </el-button>&nbsp;
+<!--              <el-button-->
+<!--                  v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_NEW)"-->
+<!--                  type="primary"-->
+<!--                  size="medium"-->
+<!--                  icon="iconfont left small ">{{ $t("start_all") }}-->
+<!--              </el-button>-->
+<!--              <el-button-->
+<!--                  v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_NEW)"-->
+<!--                  type="danger"-->
+<!--                  size="medium"-->
+<!--                  icon="iconfont left small ">{{ $t("stop_all") }}-->
+<!--              </el-button>&nbsp;-->
             </el-col>
           </el-row>
           <el-table
@@ -45,7 +52,7 @@
               :data="tableData">
             <el-table-column prop="id" label="ID" width="80"></el-table-column>
             <el-table-column prop="name" :label="$t('name')"></el-table-column>
-            <el-table-column prop="status" :label="$t('status')"></el-table-column>
+            <el-table-column prop="start_command" :label="$t('start_command')"></el-table-column>
             <el-table-column :label="$t('operate')" width="380" align="right">
               <template slot-scope="scope">
                 <el-button
@@ -114,6 +121,24 @@
             <el-input v-model="dialogForm.start_command" autocomplete="off"></el-input>
           </el-form-item>
 
+          <el-form-item :label="$t('server_id')" prop="server_id">
+            <el-select v-model="dialogForm.server_id" placeholder="请选择">
+              <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item :label="$t('group_path_alias')" prop="server_id">
+            <el-select v-model="dialogForm.group_path_alias" placeholder="请选择">
+              <el-option v-for="item in group_path_alias_list" :key="item.name" :label="item.name" :value="item.name"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item :label="$t('group_config_alias')" prop="server_id">
+            <el-select v-model="dialogForm.group_config_alias" placeholder="请选择">
+              <el-option v-for="item in group_config_alias_list" :key="item.name" :label="item.name" :value="item.name"></el-option>
+            </el-select>
+          </el-form-item>
+
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="small" @click="dialogCloseHandler">{{ $t("cancel") }}</el-button>
@@ -144,8 +169,10 @@ export default {
         id: 0,
         start_user: "",
         start_command: "",
-        path: "",
         server_id: 0,
+        group_id: 0,
+        group_config_alias: 0,
+        group_path_alias: 0,
       },
       group: null,
       dialogTableVisible: false,
@@ -155,8 +182,8 @@ export default {
       btnLoading: false,
       tableData: [],
       tableLoading: false,
-      start_command: "",
-      start_user: "",
+      group_path_alias_list: [],
+      group_config_alias_list: [],
       options: [
         {
           id: 0,
@@ -238,7 +265,11 @@ export default {
         });
       });
     },
+    openAddDialogHandler(){
+      this.dialogVisible = true;
+      this.dialogTitle = this.$t("run");
 
+    },
     openEditDialogHandler(row) {
       // this.dialogPathCloseHandler();
       this.dialogVisible = true;
@@ -249,6 +280,7 @@ export default {
     },
 
     loadTableData() {
+
       this.tableLoading = true;
       listGroupRunApi({
         group_id: this.group.id
@@ -260,6 +292,9 @@ export default {
       }).catch((err) => {
         this.tableLoading = false;
       });
+
+      // 别名
+
     },
 
     openXtermDialogHandler(row) {

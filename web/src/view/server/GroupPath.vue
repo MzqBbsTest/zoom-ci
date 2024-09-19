@@ -72,15 +72,10 @@
             :rules="rules"
             label-width="80px"
         >
+
           <el-form-item :label="$t('server_id')" prop="server_id">
             <el-select v-model="dialogForm.server_id" placeholder="请选择">
-              <el-option
-                  v-for="item in options"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-              >
-              </el-option>
+              <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
 

@@ -81,20 +81,17 @@
             :rules="rules"
             label-width="80px"
         >
+
           <el-form-item :label="$t('server_id')" prop="server_id">
             <el-select v-model="dialogForm.server_id" placeholder="请选择">
-              <el-option
-                  v-for="item in options"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-              >
-              </el-option>
+              <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
+
           <el-form-item :label="$t('name')" prop="name">
             <el-input v-model="dialogForm.name" autocomplete="off"></el-input>
           </el-form-item>
+
           <el-form-item :label="$t('file_path')" prop="file_path">
             <el-input v-model="dialogForm.file_path" autocomplete="off" :placeholder="$t('server_file_path')"></el-input>
           </el-form-item>
@@ -117,11 +114,7 @@
         <div slot="footer" class="dialog-footer">
           <el-button size="small" @click="dialogCloseHandler">{{ $t("cancel") }}
           </el-button>
-          <el-button
-              :loading="btnLoading"
-              size="small"
-              type="primary"
-              @click="dialogSubmitHandler">{{ $t("enter") }}
+          <el-button :loading="btnLoading" size="small" type="primary" @click="dialogSubmitHandler">{{ $t("enter") }}
           </el-button>
         </div>
       </div>

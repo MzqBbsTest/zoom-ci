@@ -359,4 +359,6 @@ export default {
     'alias_cannot_empty': '别名不能为空',
     'file_path_cannot_empty': '服务器文件路径不能为空',
     'file_cannot_empty': '文件不能为空',
+    'group_path_alias': '应用别名',
+    'group_config_alias': '配置别名',
 }
