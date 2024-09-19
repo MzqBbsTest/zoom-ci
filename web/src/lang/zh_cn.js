@@ -355,4 +355,8 @@ export default {
     'server_xterm': '控制台',
     'app_name': '应用名称',
     'server_file_path': '把文件保存到服务器指定的目录',
+    'alias': '别名',
+    'alias_cannot_empty': '别名不能为空',
+    'file_path_cannot_empty': '服务器文件路径不能为空',
+    'file_cannot_empty': '文件不能为空',
 }

@@ -10,9 +10,7 @@ import (
 	"html/template"
 
 	"github.com/zoom-ci/zoom-ci"
-	"github.com/zoom-ci/zoom-ci/server/router/deploy"
 	"github.com/zoom-ci/zoom-ci/server/router/middleware"
-	"github.com/zoom-ci/zoom-ci/server/router/project"
 	reqApi "github.com/zoom-ci/zoom-ci/server/router/route/api"
 	"github.com/zoom-ci/zoom-ci/server/router/server"
 	"github.com/zoom-ci/zoom-ci/server/router/ssh_key"
@@ -35,55 +33,10 @@ func RegisterRoute() {
 		api.POST(reqApi.MY_USER_PASSWORD, user.MyUserPassword)
 
 		serverGroup(api)
-
-		api.GET(reqApi.USER_ROLE_PRIV_LIST, user.RolePrivList)
-		api.POST(reqApi.USER_ROLE_ADD, user.RoleAdd)
-		api.POST(reqApi.USER_ROLE_UPDATE, user.RoleUpdate)
-		api.GET(reqApi.USER_ROLE_LIST, user.RoleList)
-		api.GET(reqApi.USER_ROLE_DETAIL, user.RoleDetail)
-		api.POST(reqApi.USER_ROLE_DELETE, user.RoleDelete)
-		api.POST(reqApi.USER_ADD, user.UserAdd)
-		api.POST(reqApi.USER_UPDATE, user.UserUpdate)
-		api.GET(reqApi.USER_LIST, user.UserList)
-		api.GET(reqApi.USER_EXISTS, user.UserExists)
-		api.GET(reqApi.USER_DETAIL, user.UserDetail)
-		api.POST(reqApi.USER_DELETE, user.UserDelete)
-
-		api.POST(reqApi.PROJECT_SPACE_ADD, project.SpaceAdd)
-		api.POST(reqApi.PROJECT_SPACE_UPDATE, project.SpaceUpdate)
-		api.GET(reqApi.PROJECT_SPACE_LIST, project.SpaceList)
-		api.GET(reqApi.PROJECT_SPACE_DETAIL, project.SpaceDetail)
-		api.POST(reqApi.PROJECT_SPACE_DELETE, project.SpaceDelete)
-		api.GET(reqApi.PROJECT_MEMBER_SEARCH, project.MemberSearch)
-		api.POST(reqApi.PROJECT_MEMBER_ADD, project.MemberAdd)
-		api.GET(reqApi.PROJECT_MEMBER_LIST, project.MemberList)
-		api.POST(reqApi.PROJECT_MEMBER_REMOVE, project.MemberRemove)
-		api.POST(reqApi.PROJECT_ADD, project.ProjectAdd)
-		api.POST(reqApi.PROJECT_COPY, project.ProjectCopy)
-		api.POST(reqApi.PROJECT_UPDATE, project.ProjectUpdate)
-		api.GET(reqApi.PROJECT_LIST, project.ProjectList)
-		api.POST(reqApi.PROJECT_SWITCHSTATUS, project.ProjectSwitchStatus)
-		api.GET(reqApi.PROJECT_DETAIL, project.ProjectDetail)
-		api.POST(reqApi.PROJECT_DELETE, project.ProjectDelete)
-		api.POST(reqApi.PROJECT_BUILDSCRIPT, project.ProjectBuildScript)
-		api.POST(reqApi.PROJECT_HOOKSCRIPT, project.ProjectHookScript)
-
-		api.GET(reqApi.DEPLOY_APPLY_PROJECT_DETAIL, deploy.ApplyProjectDetail)
-		api.POST(reqApi.DEPLOY_APPLY_SUBMIT, deploy.ApplySubmit)
-		api.GET(reqApi.DEPLOY_APPLY_PROJECT_ALL, deploy.ApplyProjectAll)
-		api.GET(reqApi.DEPLOY_APPLY_LIST, deploy.ApplyList)
-		api.GET(reqApi.DEPLOY_APPLY_DETAIL, deploy.ApplyDetail)
-		api.POST(reqApi.DEPLOY_APPLY_AUDIT, deploy.ApplyAudit)
-		api.POST(reqApi.DEPLOY_APPLY_UPDATE, deploy.ApplyUpdate)
-		api.POST(reqApi.DEPLOY_APPLY_DROP, deploy.ApplyDrop)
-		api.POST(reqApi.DEPLOY_BUILD_START, deploy.BuildStart)
-		api.GET(reqApi.DEPLOY_BUILD_STATUS, deploy.BuildStatus)
-		api.POST(reqApi.DEPLOY_BUILD_STOP, deploy.BuildStop)
-		api.POST(reqApi.DEPLOY_DEPLOY_START, deploy.DeployStart)
-		api.GET(reqApi.DEPLOY_DEPLOY_STATUS, deploy.DeployStatus)
-		api.POST(reqApi.DEPLOY_DEPLOY_STOP, deploy.DeployStop)
-		api.GET(reqApi.DEPLOY_APPLY_ROLLBACK, deploy.ApplyRollbackList)
-		api.POST(reqApi.DEPLOY_DEPLOY_ROLLBACK, deploy.DeployRollback)
+		projectGroup(api)
+		userGroup(api)
+		deployGroup(api)
+		xtermGroup(api)
 
 		api.GET(reqApi.SSHKEY_LIST, ssh_key.SshKeyList)
 		api.POST(reqApi.SSHKEY_ADD, ssh_key.SshKeyAdd)
@@ -91,10 +44,6 @@ func RegisterRoute() {
 		api.POST(reqApi.SSHKEY_DELETE, ssh_key.SshKeyDelete)
 		api.GET(reqApi.SSHKEY_DETAIL, ssh_key.SshKeyDetail)
 
-		api.GET(reqApi.CMD_LIST, server.CmdList)
-		api.POST(reqApi.CMD_ADD, server.CmdSave)
-		api.POST(reqApi.CMD_UPDATE, server.CmdSave)
-		api.POST(reqApi.CMD_DELETE, server.CmdDelete)
 	}
 	RegisterWebRouter()
 }

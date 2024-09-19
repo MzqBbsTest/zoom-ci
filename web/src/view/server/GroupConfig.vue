@@ -78,6 +78,7 @@
             ref="dialogRef"
             :model="dialogForm"
             size="medium"
+            :rules="rules"
             label-width="80px"
         >
           <el-form-item :label="$t('server_id')" prop="server_id">
@@ -137,12 +138,15 @@ export default {
       rules: {
         server_id: [{required: true, message: this.$t('server_cannot_empty'), trigger: 'blur',},],
         name: [{required: true, message: this.$t('name_cannot_empty'), trigger: 'blur',},],
-        // path: [{required: true, message: this.$t('name_cannot_empty'), trigger: 'blur',},]
+        alias: [{required: true, message: this.$t('alias_cannot_empty'), trigger: 'blur',},],
+        file_path: [{required: true, message: this.$t('file_path_cannot_empty'), trigger: 'blur',},],
+        file: [{required: true, message: this.$t('file_cannot_empty'), trigger: 'blur',},]
       },
       dialogForm: {
         id: 0,
         group_id: 0,
         name: "",
+        alias: "",
         file_path: "",
         file: "",
         server_id: 0,
@@ -287,6 +291,7 @@ export default {
       }).then((res) => {
         this.tableData = res.list;
         this.$root.Total = res.total;
+        this.$root.PageInit()
         this.tableLoading = false;
       }).catch((err) => {
         this.tableLoading = false;

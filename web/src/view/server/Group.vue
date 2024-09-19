@@ -214,6 +214,7 @@ export default {
             listGroupApi({keyword: this.searchInput, offset: this.$root.PageOffset(), limit: this.$root.PageSize}).then(res => {
                 this.tableData = res.list
                 this.$root.Total = res.total
+                this.$root.PageInit()
                 this.tableLoading = false
             }).catch(err => {
                 this.tableLoading = false

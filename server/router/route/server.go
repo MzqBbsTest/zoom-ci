@@ -34,18 +34,4 @@ func serverGroup(api *gin.RouterGroup) {
 	api.GET(reqApi.SERVER_GROUP_CONFIG_ID, server.GroupConfigDetail)
 	api.DELETE(reqApi.SERVER_GROUP_CONFIG, server.GroupConfigDelete)
 
-	// ssh
-	api.GET(reqApi.SERVER_SSH_TEST, server.ServerSshTest)
-	api.GET(reqApi.SERVER_SESSION, server.CreateSession)
-	api.GET(reqApi.SERVER_SESSION_RESIZE, server.SessionResize)
-
-	api.GET(reqApi.SERVER_SFTP, server.SftpIndex)
-	api.GET(reqApi.SERVER_SFTP_RENAME, server.SftpRename)
-	api.GET(reqApi.SERVER_SFTP_MOD, server.SftpChmod)
-	api.GET(reqApi.SERVER_SFTP_CREATE_DIR, server.SftpCreateDir)
-	api.POST(reqApi.SERVER_SFTP_UPLOAD, server.SftpUploadFile)
-	api.GET(reqApi.SERVER_SFTP_DELETE, server.SftpDeleteFile)
-	api.POST(reqApi.SERVER_SFTP_ZIP, server.SftpCreateZip)
-	api.POST(reqApi.SERVER_SFTP_UNZIP, server.SftpUnZip)
-	api.GET(reqApi.SERVER_SFTP_DOWN, server.SftpDown)
 }
