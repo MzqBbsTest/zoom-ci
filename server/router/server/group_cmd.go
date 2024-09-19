@@ -99,3 +99,48 @@ func GroupCmdDetail(c *gin.Context) {
 
 	render.JSON(c, groupCmd)
 }
+
+func GroupCmdStart(c *gin.Context) {
+	id := c.GetInt("id")
+	if id == 0 {
+		render.Success(c)
+		return
+	}
+
+	groupCmd := server.GroupCmd{ID: id}
+	if err := groupCmd.Detail(); err != nil {
+		render.ParamError(c, err.Error())
+		return
+	}
+
+	query := query2.BindGroupCmdTask{GroupCmdId: groupCmd.ID, Status: -2}
+
+	task := server.GroupCmdTask{
+		GroupCmdId:       groupCmd.ID,
+		Name:             groupCmd.Name,
+		GroupConfigAlias: groupCmd.GroupConfigAlias,
+		GroupPathAlias:   groupCmd.GroupPathAlias,
+		StartCommand:     groupCmd.StartCommand,
+		StartUser:        groupCmd.StartUser,
+		ServerId:         groupCmd.ServerId,
+		GroupId:          groupCmd.GroupId,
+	}
+
+	total, err := task.Total(&query)
+	if err != nil {
+		render.ParamError(c, err.Error())
+		return
+	}
+
+	if total > 0 {
+		render.ParamError(c, "已存在正在执行的任务")
+		return
+	}
+
+	if err := task.Create(); err != nil {
+		render.ParamError(c, err.Error())
+		return
+	}
+
+	render.Success(c)
+}

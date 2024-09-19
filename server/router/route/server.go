@@ -42,4 +42,8 @@ func serverGroup(api *gin.RouterGroup) {
 	api.PUT(reqApi.SERVER_GROUP_CMD, server.GroupCmdSave)
 	api.GET(reqApi.SERVER_GROUP_CMD_ID, server.GroupCmdDetail)
 	api.DELETE(reqApi.SERVER_GROUP_CMD, server.GroupCmdDelete)
+
+	/// task server/group/cmd/start
+
+	api.POST(reqApi.SERVER_GROUP_CMD_START, server.GroupCmdStart)
 }

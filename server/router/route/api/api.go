@@ -30,8 +30,9 @@ const (
 	SERVER_GROUP_CONFIG_ALIAS = "/server/group/config/alias"
 	SERVER_GROUP_CONFIG_ID    = "/server/group/config/:id"
 
-	SERVER_GROUP_CMD    = "/server/group/cmd"
-	SERVER_GROUP_CMD_ID = "/server/group/cmd/:id"
+	SERVER_GROUP_CMD       = "/server/group/cmd"
+	SERVER_GROUP_CMD_ID    = "/server/group/cmd/:id"
+	SERVER_GROUP_CMD_START = "/server/group/cmd/start"
 
 	SERVER_ADD            = "/server/add"
 	SERVER_UPDATE         = "/server/update"
