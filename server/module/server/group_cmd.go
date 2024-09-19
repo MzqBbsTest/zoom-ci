@@ -42,7 +42,7 @@ func (g *GroupCmd) Create() error {
 	if ok := serverGroupCmd.Create(); !ok {
 		return errors.New("create group cmd data failed")
 	}
-
+	g.ID = serverGroupCmd.ID
 	return nil
 }
 

@@ -38,7 +38,7 @@ func (g *GroupConfig) Create() error {
 	if ok := serverGroupConfig.Create(); !ok {
 		return errors.New("create server group data failed")
 	}
-
+	g.ID = serverGroupConfig.ID
 	return nil
 }
 

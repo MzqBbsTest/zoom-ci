@@ -77,6 +77,7 @@ func (g *Group) Create() error {
 		serverGroup.Create()
 	}
 
+	g.ID = group.ID
 	return nil
 }
 

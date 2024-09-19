@@ -38,6 +38,7 @@ func (g *GroupPath) Create() error {
 		return errors.New("create server group data failed")
 	}
 
+	g.ID = serverGroupPath.ID
 	return nil
 }
 
