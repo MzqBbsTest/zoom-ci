@@ -65,7 +65,7 @@ func (g *GroupConfig) List(bind *query2.BindGroupConfig) ([]GroupConfig, error) 
 
 	groupConfig := model.GroupConfig{}
 	groupConfigList, ok := groupConfig.List(model.QueryParam{
-		Fields: "id, name, config, ctime, group_id, server_id",
+		Fields: "id, name, path, ctime, group_id, server_id",
 		Offset: offset,
 		Limit:  limit,
 		Order:  "id DESC",

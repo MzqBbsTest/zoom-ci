@@ -39,33 +39,16 @@ export function detailGroupPathApi(id) {
     return options('/server/group/path/' + id)
 }
 
-
 export function listGroupConfigApi(params) {
-    // return Promise.resolve({
-    //     "list": [
-    //         {
-    //             "id": 3,
-    //             "name": "nginx.conf",
-    //             "file": "/nginx.conf",
-    //             "ctime": "2024-05-13"
-    //         },
-    //         {
-    //             "id": 1,
-    //             "name": "php.conf",
-    //             "file": "/php.conf",
-    //             "ctime": "2024-05-13"
-    //         },
-    //     ],
-    // });
     return get('/server/group/config', params)
 }
 
 export function saveGrouConfigpApi(data) {
-    return post('/server/group/config/update', data)
+    return post('/server/group/config', data)
 }
 
 export function deleteGrouConfigpApi(data) {
-    return del('/server/group/config/update', data)
+    return del('/server/group/config', data)
 }
 
 export function detailGrouConfigpApi(id) {
@@ -85,6 +68,22 @@ export function listServerApi(params) {
 }
 
 export function listGroupRunApi(params) {
+    return Promise.resolve({
+        "list": [
+            {
+                "id": 3,
+                "name": "nginx.conf",
+                "status": "1",
+                "ctime": "2024-05-13"
+            },
+            {
+                "id": 1,
+                "name": "php.conf",
+                "status": "2",
+                "ctime": "2024-05-13"
+            },
+        ],
+    });
     return get('/server/group/config/list', params)
 }
 

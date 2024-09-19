@@ -44,6 +44,8 @@ export default {
     'delete': '删除',
     'cluster_name': '集群名称',
     'name_cannot_empty': '名称不能为空',
+    'server_cannot_empty': '请选择服务器',
+    'path_cannot_empty': '路径不能为空',
     'cancel': '取消',
     'enter': '确定',
     'edit_cluster': '编辑集群',
@@ -352,4 +354,5 @@ export default {
     'server_connect': '测试连接',
     'server_xterm': '控制台',
     'app_name': '应用名称',
+    'server_file_path': '把文件保存到服务器指定的目录',
 }

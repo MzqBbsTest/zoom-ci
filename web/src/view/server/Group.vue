@@ -35,7 +35,7 @@
                         v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"
                         icon="el-icon-edit"
                         type="text"
-                        @click="openCinfigDialogHandler(scope.row)">{{ $t('config') }}</el-button>
+                        @click="openConfigDialogHandler(scope.row)">{{ $t('config') }}</el-button>
                         <el-button
                         v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"
                         icon="el-icon-edit"
@@ -97,7 +97,7 @@
       <!-- 组件 -->
         <GroupPath  ></GroupPath>
         <GroupConfig ></GroupConfig>
-<!--        <GroupRun ></GroupRun>-->
+        <GroupRun ></GroupRun>
     </div>
 </template>
 
@@ -105,11 +105,11 @@
 import { listServerApi, newGroupApi, updateGroupApi, listGroupApi, deleteGroupApi, detailGroupApi } from '@/api/server'
 import GroupPath from './GroupPath.vue'
 import GroupConfig from './GroupConfig.vue'
-// import GroupRun from './GroupRun.vue'
+import GroupRun from './GroupRun.vue'
 export default {
     components: {
         GroupPath,
-        // GroupRun,
+        GroupRun,
         GroupConfig
     },
     data() {
@@ -141,13 +141,13 @@ export default {
             this.dialogTitle = this.$t('app_path')
         },
         openAppPathDialogHandler(row){
-            this.$root.EmitEventGlobal("openAppPathDialogHandler", {group:row});
+            this.$root.EmitEventGlobal("openAppPathDialogHandler", {group:row, servers: this.servers });
         },
-        openCinfigDialogHandler(row) {
-            this.$root.EmitEventGlobal("openCinfigDialogHandler", {group:row});
+        openConfigDialogHandler(row) {
+            this.$root.EmitEventGlobal("openConfigDialogHandler", {group:row, servers: this.servers});
         },
         openRunDialogHandler(row){
-            this.$root.EmitEventGlobal("openRunDialogHandler", {group:row});
+            this.$root.EmitEventGlobal("openRunDialogHandler", {group:row, servers: this.servers});
         },
         openEditDialogHandler(row) {
             this.dialogVisible = true

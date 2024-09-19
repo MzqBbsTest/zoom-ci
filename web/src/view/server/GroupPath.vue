@@ -29,6 +29,7 @@
             <el-table-column prop="id" label="ID" width="80"></el-table-column>
             <el-table-column prop="name" :label="$t('name')"></el-table-column>
             <el-table-column prop="path" :label="$t('path')"></el-table-column>
+            <el-table-column prop="server_id" :label="$t('server_id')"><template slot-scope="scope">{{ servers[scope.row.server_id] }}</template></el-table-column>
             <el-table-column :label="$t('operate')" width="380" align="right">
               <template slot-scope="scope">
                 <el-button
@@ -116,9 +117,9 @@ export default {
   data() {
     return {
       rules: {
-        server_id: [{required: true, message: this.$t('name_cannot_empty'), trigger: 'blur',},],
+        server_id: [{required: true, message: this.$t('server_cannot_empty'), trigger: 'blur',},],
         name: [{required: true, message: this.$t('name_cannot_empty'), trigger: 'blur',},],
-        path: [{required: true, message: this.$t('name_cannot_empty'), trigger: 'blur',},]
+        path: [{required: true, message: this.$t('path_cannot_empty'), trigger: 'blur',},]
       },
       dialogForm: {
         id: 0,
@@ -140,7 +141,8 @@ export default {
           id: 0,
           name: "全局",
         },
-      ]
+      ],
+      servers:{"0": "全局"}
     };
   },
   computed: {},
@@ -188,16 +190,16 @@ export default {
       this.dialogTitle = this.$t("app_path");
       this.group = group.group;
       this.dialogForm.group_id = this.group.id
-      this.loadTableData();
 
-      listServerApi({group_id: this.group.id,}).then((res) => {
-        res.list.forEach(res=>{
-          this.options.push({
-            id: res.id,
-            name: res.name
-          })
+      group.servers.forEach(res=>{
+        this.options.push({
+          id: res.key,
+          name: res.label
         })
+        this.servers[res.key] = res.label
       })
+
+      this.loadTableData();
     },
     deleteHandler(row) {
       this.$root.ConfirmDelete(() => {
@@ -222,9 +224,20 @@ export default {
       this.dialogForm.server_id = row.server_id;
       this.dialogForm.id = row.id;
     },
-    loadTableData() {
+    async loadTableData() {
       this.tableLoading = true;
-      listGroupPathApi({
+
+      // await listServerApi({group_id: this.group.id,}).then((res) => {
+      //   res.list.forEach(res=>{
+      //     this.options.push({
+      //       id: res.id,
+      //       name: res.name
+      //     })
+      //     this.servers[res.id] = res.name
+      //   })
+      // })
+
+      await listGroupPathApi({
         group_id: this.group.id,
         offset: this.$root.PageOffset(),
         limit: this.$root.PageSize,
@@ -235,6 +248,7 @@ export default {
       }).catch((err) => {
         this.tableLoading = false;
       });
+
     },
   },
   mounted() {

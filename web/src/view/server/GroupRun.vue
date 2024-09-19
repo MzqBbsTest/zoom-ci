@@ -74,16 +74,17 @@
                   @click="stopHandler(scope.row)"
                   >{{ $t("stop") }}</el-button
                 >
-                <el-button
-                  v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"
-                  icon="el-icon-warning"
-                  type="text"
-                  @click="openXtermDialogHandler(scope.row)"
-                  >{{ $t("command") }}</el-button
-                >
+<!--                <el-button-->
+<!--                  v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"-->
+<!--                  icon="el-icon-warning"-->
+<!--                  type="text"-->
+<!--                  @click="openXtermDialogHandler(scope.row)"-->
+<!--                  >{{ $t("command") }}</el-button-->
+<!--                >-->
               </template>
             </el-table-column>
           </el-table>
+
           <el-pagination
             background
             layout="prev, pager, next"
@@ -183,21 +184,16 @@ export default {
       tableLoading: false,
       start_command: "",
       start_user: "",
-    };
-  },
-  computed: {
-    options() {
-      return [
+      options: [
         {
           id: 0,
           name: "全局",
         },
-        {
-          id: 1,
-          name: "92",
-        },
-      ];
-    },
+      ],
+      servers:{"0": "全局"}
+    };
+  },
+  computed: {
   },
   methods: {
     dialogSubmitHandler() {
@@ -246,7 +242,14 @@ export default {
       this.dialogTableVisible = true;
       this.dialogTitle = this.$t("run");
       this.group = group.group;
-      console.log(this.group )
+      group.servers.forEach(res=>{
+        this.options.push({
+          id: res.key,
+          name: res.label
+        })
+        this.servers[res.key] = res.label
+      })
+
       this.loadTableData();
     },
     deleteHandler(row) {
@@ -283,7 +286,7 @@ export default {
     },
     openXtermDialogHandler(row){
 
-      this.$root.EmitEventGlobal("openXtermDialogHandler", {group:this.group, server:row});
+      // this.$root.EmitEventGlobal("openXtermDialogHandler", {group:this.group, server:row});
     }
   },
   mounted() {
