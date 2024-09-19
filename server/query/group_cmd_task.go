@@ -20,6 +20,10 @@ func ParseGroupCmdTaskQuery(c *BindGroupCmdTask) []model.WhereParam {
 		builder.AddCondition("group_id", "=", c.GroupId)
 	}
 
+	if c.GroupCmdId > 0 {
+		builder.AddCondition("group_cmd_id", "=", c.GroupCmdId)
+	}
+
 	if c.ServerId > 0 {
 		builder.AddCondition("server_id", "=", c.ServerId)
 	}
