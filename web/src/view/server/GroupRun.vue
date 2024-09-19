@@ -8,20 +8,20 @@
     >
       <div class="app-dialog" v-loading="dialogLoading">
         <el-card shadow="never">
-<!--          <el-row class="app-btn-group">-->
-<!--            <el-col :span="4">-->
-<!--              {{ $t('start_user') }}:-->
-<!--              <el-input-->
-<!--                  v-model="start_user">-->
-<!--              </el-input>-->
-<!--            </el-col>-->
-<!--            <el-col :span="24">-->
-<!--              {{ $t('start_command') }}:-->
-<!--              <el-input-->
-<!--                  v-model="start_command">-->
-<!--              </el-input>-->
-<!--            </el-col>-->
-<!--          </el-row>-->
+          <!--          <el-row class="app-btn-group">-->
+          <!--            <el-col :span="4">-->
+          <!--              {{ $t('start_user') }}:-->
+          <!--              <el-input-->
+          <!--                  v-model="start_user">-->
+          <!--              </el-input>-->
+          <!--            </el-col>-->
+          <!--            <el-col :span="24">-->
+          <!--              {{ $t('start_command') }}:-->
+          <!--              <el-input-->
+          <!--                  v-model="start_command">-->
+          <!--              </el-input>-->
+          <!--            </el-col>-->
+          <!--          </el-row>-->
           <el-row class="app-btn-group">
             <el-col :span="8">
               <el-button
@@ -31,18 +31,18 @@
                   size="medium"
                   icon="iconfont left small ">{{ $t("start_edit") }}
               </el-button>
-<!--              <el-button-->
-<!--                  v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_NEW)"-->
-<!--                  type="primary"-->
-<!--                  size="medium"-->
-<!--                  icon="iconfont left small ">{{ $t("start_all") }}-->
-<!--              </el-button>-->
-<!--              <el-button-->
-<!--                  v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_NEW)"-->
-<!--                  type="danger"-->
-<!--                  size="medium"-->
-<!--                  icon="iconfont left small ">{{ $t("stop_all") }}-->
-<!--              </el-button>&nbsp;-->
+              <!--              <el-button-->
+              <!--                  v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_NEW)"-->
+              <!--                  type="primary"-->
+              <!--                  size="medium"-->
+              <!--                  icon="iconfont left small ">{{ $t("start_all") }}-->
+              <!--              </el-button>-->
+              <!--              <el-button-->
+              <!--                  v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_NEW)"-->
+              <!--                  type="danger"-->
+              <!--                  size="medium"-->
+              <!--                  icon="iconfont left small ">{{ $t("stop_all") }}-->
+              <!--              </el-button>&nbsp;-->
             </el-col>
           </el-row>
           <el-table
@@ -59,7 +59,7 @@
                     v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"
                     icon="el-icon-edit"
                     type="text"
-                    @click="openEditDialogHandler(scope.row)">{{ $t("start_edit") }}
+                    @click="openEditDialogHandler(scope.row)">{{ $t("edit") }}
                 </el-button>
                 <el-button
                     v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"
@@ -67,13 +67,13 @@
                     type="text"
                     @click="startHandler(scope.row)">{{ $t("start") }}
                 </el-button>
-                <el-button
-                    v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_DEL)"
-                    type="text"
-                    icon="el-icon-warning"
-                    class="app-danger"
-                    @click="stopHandler(scope.row)">{{ $t("stop") }}
-                </el-button>
+<!--                <el-button-->
+<!--                    v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_DEL)"-->
+<!--                    type="text"-->
+<!--                    icon="el-icon-warning"-->
+<!--                    class="app-danger"-->
+<!--                    @click="stopHandler(scope.row)">{{ $t("stop") }}-->
+<!--                </el-button>-->
                 <!--                <el-button-->
                 <!--                  v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"-->
                 <!--                  icon="el-icon-warning"-->
@@ -117,32 +117,34 @@
             <el-input v-model="dialogForm.start_user" autocomplete="off"></el-input>
           </el-form-item>
 
-          <el-form-item :label="$t('start_command')" prop="start_command">
-            <el-input v-model="dialogForm.start_command" autocomplete="off"></el-input>
-          </el-form-item>
-
           <el-form-item :label="$t('server_id')" prop="server_id">
-            <el-select v-model="dialogForm.server_id" placeholder="请选择">
+            <el-select v-model="dialogForm.server_id" placeholder="请选择" @change="changeServer">
               <el-option v-for="item in options" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item :label="$t('group_path_alias')" prop="server_id">
-            <el-select v-model="dialogForm.group_path_alias" placeholder="请选择">
-              <el-option v-for="item in group_path_alias_list" :key="item.name" :label="item.name" :value="item.name"></el-option>
+            <el-select v-model="dialogForm.group_path_alias" placeholder="请选择"  @change="generateCommand">
+              <el-option v-for="item in group_path_alias_list" :key="item.alias" :label="item.alias"
+                         :value="item.alias"></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item :label="$t('group_config_alias')" prop="server_id">
-            <el-select v-model="dialogForm.group_config_alias" placeholder="请选择">
-              <el-option v-for="item in group_config_alias_list" :key="item.name" :label="item.name" :value="item.name"></el-option>
+            <el-select v-model="dialogForm.group_config_alias" placeholder="请选择"  @change="generateCommand">
+              <el-option v-for="item in group_config_alias_list" :key="item.alias" :label="item.alias" :value="item.alias"></el-option>
             </el-select>
+          </el-form-item>
+
+          <el-form-item :label="$t('start_command')" prop="start_command">
+            <el-input type="textarea" v-model="dialogForm.start_command" autocomplete="off"></el-input>
+            <p>###应用别名### + 服务器，会定位对应服务器的应用路径，然后使用真实的路径替换掉别名，并在对应服务器上执行。</p>
           </el-form-item>
 
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="small" @click="dialogCloseHandler">{{ $t("cancel") }}</el-button>
-          <el-button :loading="btnLoading" size="small" type="primary" @click="dialogSubmitHandler">{{ $t("enter") }}</el-button>
+          <el-button :loading="btnLoading" size="small" type="primary" @click="dialogSubmitHandler">{{$t("enter")}}</el-button>
         </div>
       </div>
     </el-dialog>
@@ -152,7 +154,7 @@
 </template>
 
 <script>
-import {addGroupPathApi, deleteGroupPathApi, listGroupRunApi, updateGroupPathApi} from "@/api/server";
+import {listGroupConfigAliasApi, listGroupPathAliasApi, listGroupRunApi,saveGroupRunApi} from "@/api/server";
 // import ServerXterm from './ServerXterm'
 export default {
   components: {
@@ -167,12 +169,12 @@ export default {
       },
       dialogForm: {
         id: 0,
-        start_user: "",
+        start_user: "root",
         start_command: "",
         server_id: 0,
         group_id: 0,
-        group_config_alias: 0,
-        group_path_alias: 0,
+        group_config_alias: "",
+        group_path_alias: "",
       },
       group: null,
       dialogTableVisible: false,
@@ -195,6 +197,34 @@ export default {
   },
   computed: {},
   methods: {
+    generateCommand(){
+      this.dialogForm.start_command = ""
+      if (this.dialogForm.group_path_alias.length){
+        this.dialogForm.start_command += `###${this.dialogForm.group_path_alias}### `
+      }
+      if (this.dialogForm.group_config_alias.length){
+        this.dialogForm.start_command += `###${this.dialogForm.group_config_alias}###`
+      }
+    },
+    changeServer() {
+      // 别名
+      listGroupConfigAliasApi({
+        group_id: this.dialogForm.group_id,
+        server_id: this.dialogForm.server_id,
+      }).then((res) => {
+        this.group_config_alias_list = res.list
+      })
+
+      listGroupPathAliasApi({
+        group_id: this.dialogForm.group_id,
+        server_id: this.dialogForm.server_id,
+      }).then((res) => {
+        this.group_path_alias_list = res.list
+      })
+
+      this.group_config_alias = ""
+      this.group_path_alias = ""
+    },
 
     dialogSubmitHandler() {
       let vm = this;
@@ -203,21 +233,14 @@ export default {
           return false;
         }
         this.btnLoading = true;
-        let opFn;
-        if (this.dialogForm.id) {
-          opFn = updateGroupPathApi;
-        } else {
-          opFn = addGroupPathApi;
-        }
-        opFn(this.dialogForm)
-            .then((res) => {
+
+        saveGroupRunApi(this.dialogForm).then((res) => {
               this.$root.MessageSuccess(() => {
                 this.dialogCloseHandler();
                 this.btnLoading = false;
                 this.loadTableData();
               });
-            })
-            .catch((err) => {
+            }).catch((err) => {
               this.btnLoading = false;
             });
       });
@@ -245,6 +268,7 @@ export default {
       this.dialogTableVisible = true;
       this.dialogTitle = this.$t("run");
       this.group = group.group;
+
       group.servers.forEach(res => {
         this.options.push({
           id: res.key,
@@ -254,6 +278,7 @@ export default {
       })
 
       this.loadTableData();
+      this.changeServer();
     },
 
     deleteHandler(row) {
@@ -265,11 +290,13 @@ export default {
         });
       });
     },
-    openAddDialogHandler(){
+
+    openAddDialogHandler() {
       this.dialogVisible = true;
       this.dialogTitle = this.$t("run");
 
     },
+
     openEditDialogHandler(row) {
       // this.dialogPathCloseHandler();
       this.dialogVisible = true;
@@ -292,8 +319,6 @@ export default {
       }).catch((err) => {
         this.tableLoading = false;
       });
-
-      // 别名
 
     },
 

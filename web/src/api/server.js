@@ -67,28 +67,28 @@ export function listServerApi(params) {
     return get('/server/list', params)
 }
 
+export function listGroupPathAliasApi(params) {
+    return get('/server/group/path/alias', params)
+}
+
+export function listGroupConfigAliasApi(params) {
+    return get('/server/group/config/alias', params)
+}
+
 export function listGroupRunApi(params) {
-    return Promise.resolve({
-        "list": [
-            {
-                "id": 3,
-                "name": "nginx.conf",
-                "status": "1",
-                "ctime": "2024-05-13"
-            },
-            {
-                "id": 1,
-                "name": "php.conf",
-                "status": "2",
-                "ctime": "2024-05-13"
-            },
-        ],
-    });
-    return get('/server/group/config/list', params)
+    return get('/server/group/cmd', params)
+}
+
+export function saveGroupRunApi(params) {
+    return post('/server/group/cmd', params)
+}
+
+export function deleteGroupRunApi(params) {
+    return del('/server/group/cmd', params)
 }
 
 export function deleteServerApi(data) {
-    return post('/server/delete', data)
+    return del('/server/delete', data)
 }
 
 export function detailServerApi(params) {

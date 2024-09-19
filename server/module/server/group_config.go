@@ -13,6 +13,7 @@ import (
 type GroupConfig struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
+	Alias    string `json:"alias"`
 	Path     string `json:"path"`
 	Ctime    int    `json:"ctime"`
 	ServerId int    `json:"server_id"`
@@ -55,6 +56,33 @@ func (g *GroupConfig) Update() error {
 	}
 
 	return nil
+}
+
+func (g *GroupConfig) ListAlias(bind *query2.BindGroupConfig) ([]GroupConfig, error) {
+
+	where := query2.ParseGroupConfigQuery(bind)
+
+	groupConfig := model.GroupConfig{}
+	groupConfigList, ok := groupConfig.List(model.QueryParam{
+		Fields: "id, alias, group_id, server_id",
+		Order:  "id DESC",
+		Group:  "alias",
+		Where:  where,
+	})
+	if !ok {
+		return nil, errors.New("get server group list failed")
+	}
+
+	l := make([]GroupConfig, len(groupConfigList))
+	for i, config := range groupConfigList {
+		l[i] = GroupConfig{
+			ID:       config.ID,
+			Alias:    config.Alias,
+			ServerId: config.ServerId,
+		}
+	}
+
+	return l, nil
 }
 
 func (g *GroupConfig) List(bind *query2.BindGroupConfig) ([]GroupConfig, error) {

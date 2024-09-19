@@ -13,6 +13,7 @@ import (
 type GroupPath struct {
 	ID       int    `json:"id"`
 	Path     string `json:"path"`
+	Alias    string `json:"alias"`
 	Name     string `json:"name"`
 	Ctime    int    `json:"ctime"`
 	ServerId int    `json:"server_id"`
@@ -55,6 +56,32 @@ func (g *GroupPath) Update() error {
 	return nil
 }
 
+func (g *GroupPath) ListAlias(bind *query2.BindGroupPath) ([]GroupPath, error) {
+	where := query2.ParseGroupPathQuery(bind)
+
+	groupPath := model.GroupPath{}
+	groupPathList, ok := groupPath.List(model.QueryParam{
+		Fields: "id, alias, group_id, server_id",
+		Order:  "id DESC",
+		Group:  "alias",
+		Where:  where,
+	})
+	if !ok {
+		return nil, errors.New("get server group list failed")
+	}
+
+	l := make([]GroupPath, len(groupPathList))
+	for i, path := range groupPathList {
+		l[i] = GroupPath{
+			ID:       path.ID,
+			Alias:    path.Alias,
+			ServerId: path.ServerId,
+		}
+	}
+
+	return l, nil
+}
+
 func (g *GroupPath) List(bind *query2.BindGroupPath) ([]GroupPath, error) {
 	offset := bind.Offset
 	limit := bind.Limit
@@ -62,7 +89,7 @@ func (g *GroupPath) List(bind *query2.BindGroupPath) ([]GroupPath, error) {
 
 	groupPath := model.GroupPath{}
 	groupPathList, ok := groupPath.List(model.QueryParam{
-		Fields: "id, name, path, ctime, group_id, server_id",
+		Fields: "id, name, alias, path, ctime, group_id, server_id",
 		Offset: offset,
 		Limit:  limit,
 		Order:  "id DESC",

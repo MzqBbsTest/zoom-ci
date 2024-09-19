@@ -12,38 +12,15 @@ import (
 	"github.com/zoom-ci/zoom-ci/server/render"
 )
 
-func GroupPathAlias(c *gin.Context) {
-	var query query2.BindGroupPath
+func GroupCmd(c *gin.Context) {
+
+	var query query2.BindGroupCmd
 	if err := c.ShouldBind(&query); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
 
-	if query.ServerId == 0 {
-		query.ServerId = -1
-	}
-
-	ser := &server.GroupPath{}
-	list, err := ser.ListAlias(&query)
-	if err != nil {
-		render.AppError(c, err.Error())
-		return
-	}
-
-	render.JSON(c, gin.H{
-		"list": list,
-	})
-}
-
-func GroupPath(c *gin.Context) {
-
-	var query query2.BindGroupPath
-	if err := c.ShouldBind(&query); err != nil {
-		render.ParamError(c, err.Error())
-		return
-	}
-
-	ser := &server.GroupPath{}
+	ser := &server.GroupCmd{}
 	list, err := ser.List(&query)
 	if err != nil {
 		render.AppError(c, err.Error())
@@ -62,23 +39,25 @@ func GroupPath(c *gin.Context) {
 	})
 }
 
-func GroupPathSave(c *gin.Context) {
+func GroupCmdSave(c *gin.Context) {
 
-	var groupForm form.GroupServerPathForm
+	var groupForm form.GroupServerCmdForm
 	if err := c.ShouldBind(&groupForm); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
 
-	groupPath := server.GroupPath{
-		ID:       groupForm.Id,
-		Path:     groupForm.Path,
-		Name:     groupForm.Name,
-		GroupId:  groupForm.GroupId,
-		ServerId: groupForm.ServerId,
+	groupCmd := server.GroupCmd{
+		ID:               groupForm.Id,
+		GroupConfigAlias: groupForm.GroupConfigAlias,
+		GroupPathAlias:   groupForm.GroupPathAlias,
+		StartCommand:     groupForm.StartCommand,
+		StartUser:        groupForm.StartUser,
+		GroupId:          groupForm.GroupId,
+		ServerId:         groupForm.ServerId,
 	}
 
-	if err := groupPath.Save(); err != nil {
+	if err := groupCmd.Save(); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
@@ -86,7 +65,7 @@ func GroupPathSave(c *gin.Context) {
 	render.Success(c)
 }
 
-func GroupPathDelete(c *gin.Context) {
+func GroupCmdDelete(c *gin.Context) {
 
 	id := c.GetInt("id")
 	if id == 0 {
@@ -94,8 +73,8 @@ func GroupPathDelete(c *gin.Context) {
 		return
 	}
 
-	groupPath := server.GroupPath{ID: id}
-	if err := groupPath.Delete(); err != nil {
+	groupCmd := server.GroupCmd{ID: id}
+	if err := groupCmd.Delete(); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
@@ -103,7 +82,7 @@ func GroupPathDelete(c *gin.Context) {
 	render.Success(c)
 }
 
-func GroupPathDetail(c *gin.Context) {
+func GroupCmdDetail(c *gin.Context) {
 
 	id := c.GetInt("id")
 	if id == 0 {
@@ -111,11 +90,11 @@ func GroupPathDetail(c *gin.Context) {
 		return
 	}
 
-	groupPath := server.GroupPath{ID: id}
-	if err := groupPath.Detail(); err != nil {
+	groupCmd := server.GroupCmd{ID: id}
+	if err := groupCmd.Detail(); err != nil {
 		render.ParamError(c, err.Error())
 		return
 	}
 
-	render.JSON(c, groupPath)
+	render.JSON(c, groupCmd)
 }

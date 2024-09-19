@@ -29,5 +29,9 @@ func ParseGroupPathQuery(c *BindGroupPath) []model.WhereParam {
 		builder.AddCondition("server_id", "=", c.ServerId)
 	}
 
+	if c.ServerId == -1 {
+		builder.AddCondition("server_id", "=", 0)
+	}
+
 	return builder.GetParams()
 }

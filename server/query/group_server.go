@@ -21,6 +21,10 @@ func ParseGroupServerQuery(c *BindGroupServer) []model.WhereParam {
 		builder.AddCondition("server_id", "=", c.ServerId)
 	}
 
+	if c.ServerId == -1 {
+		builder.AddCondition("server_id", "=", 0)
+	}
+
 	if len(c.GroupIds) > 0 {
 		builder.AddCondition("group_id", "IN", c.GroupIds)
 	}

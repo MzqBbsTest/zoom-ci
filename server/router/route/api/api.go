@@ -22,11 +22,16 @@ const (
 	SERVER_GROUP_DETAIL = "/server/group/detail"
 	SERVER_GROUP_UPDATE = "/server/group/update"
 
-	SERVER_GROUP_PATH    = "/server/group/path"
-	SERVER_GROUP_PATH_ID = "/server/group/path/:id"
+	SERVER_GROUP_PATH       = "/server/group/path"
+	SERVER_GROUP_PATH_ALIAS = "/server/group/path/alias"
+	SERVER_GROUP_PATH_ID    = "/server/group/path/:id"
 
-	SERVER_GROUP_CONFIG    = "/server/group/config"
-	SERVER_GROUP_CONFIG_ID = "/server/group/config/:id"
+	SERVER_GROUP_CONFIG       = "/server/group/config"
+	SERVER_GROUP_CONFIG_ALIAS = "/server/group/config/alias"
+	SERVER_GROUP_CONFIG_ID    = "/server/group/config/:id"
+
+	SERVER_GROUP_CMD    = "/server/group/cmd"
+	SERVER_GROUP_CMD_ID = "/server/group/cmd/:id"
 
 	SERVER_ADD            = "/server/add"
 	SERVER_UPDATE         = "/server/update"

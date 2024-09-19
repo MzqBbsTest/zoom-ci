@@ -23,6 +23,7 @@ type QueryParam struct {
 	Offset int
 	Limit  int
 	Order  string
+	Group  string
 	Where  []WhereParam
 }
 
@@ -58,6 +59,9 @@ func GetMulti(model interface{}, query QueryParam) bool {
 	}
 	if query.Order != "" {
 		db = db.Order(query.Order)
+	}
+	if query.Group != "" {
+		db = db.Group(query.Group)
 	}
 	db = parseWhereParam(db, query.Where)
 	db.Find(model)

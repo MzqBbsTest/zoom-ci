@@ -26,6 +26,7 @@ func serverGroup(api *gin.RouterGroup) {
 	api.PUT(reqApi.SERVER_GROUP_PATH, server.GroupPathSave)
 	api.GET(reqApi.SERVER_GROUP_PATH_ID, server.GroupPathDetail)
 	api.DELETE(reqApi.SERVER_GROUP_PATH, server.GroupPathDelete)
+	api.GET(reqApi.SERVER_GROUP_PATH_ALIAS, server.GroupPathAlias)
 
 	// config
 	api.GET(reqApi.SERVER_GROUP_CONFIG, server.GroupConfig)
@@ -33,5 +34,12 @@ func serverGroup(api *gin.RouterGroup) {
 	api.PUT(reqApi.SERVER_GROUP_CONFIG, server.GroupConfigSave)
 	api.GET(reqApi.SERVER_GROUP_CONFIG_ID, server.GroupConfigDetail)
 	api.DELETE(reqApi.SERVER_GROUP_CONFIG, server.GroupConfigDelete)
+	api.GET(reqApi.SERVER_GROUP_CONFIG_ALIAS, server.GroupConfigAlias)
 
+	// config
+	api.GET(reqApi.SERVER_GROUP_CMD, server.GroupCmd)
+	api.POST(reqApi.SERVER_GROUP_CMD, server.GroupCmdSave)
+	api.PUT(reqApi.SERVER_GROUP_CMD, server.GroupCmdSave)
+	api.GET(reqApi.SERVER_GROUP_CMD_ID, server.GroupCmdDetail)
+	api.DELETE(reqApi.SERVER_GROUP_CMD, server.GroupCmdDelete)
 }

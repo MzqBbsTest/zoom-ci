@@ -12,6 +12,29 @@ import (
 	"github.com/zoom-ci/zoom-ci/server/render"
 )
 
+func GroupConfigAlias(c *gin.Context) {
+	var query query2.BindGroupConfig
+	if err := c.ShouldBind(&query); err != nil {
+		render.ParamError(c, err.Error())
+		return
+	}
+
+	if query.ServerId == 0 {
+		query.ServerId = -1
+	}
+
+	ser := &server.GroupConfig{}
+	list, err := ser.ListAlias(&query)
+	if err != nil {
+		render.AppError(c, err.Error())
+		return
+	}
+
+	render.JSON(c, gin.H{
+		"list": list,
+	})
+}
+
 func GroupConfig(c *gin.Context) {
 
 	var query query2.BindGroupConfig
