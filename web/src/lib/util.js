@@ -15,6 +15,9 @@ export default {
     BindEventGlobal(messageName, callback){
         EventBus.$on(messageName, callback);
     },
+    UnBindEventGlobal(messageName){
+        EventBus.$off(messageName);
+    },
     MessageSuccess(cb){
         this.$message({
             message: this.$t('operate_success'),

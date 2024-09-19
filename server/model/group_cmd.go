@@ -21,7 +21,7 @@ type GroupCmd struct {
 }
 
 func (m *GroupCmd) TableName() string {
-	return GetTableName("group_path")
+	return GetTableName("group_cmd")
 }
 
 func (m *GroupCmd) Create() bool {

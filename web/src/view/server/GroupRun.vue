@@ -67,13 +67,13 @@
                     type="text"
                     @click="startHandler(scope.row)">{{ $t("start") }}
                 </el-button>
-<!--                <el-button-->
-<!--                    v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_DEL)"-->
-<!--                    type="text"-->
-<!--                    icon="el-icon-warning"-->
-<!--                    class="app-danger"-->
-<!--                    @click="stopHandler(scope.row)">{{ $t("stop") }}-->
-<!--                </el-button>-->
+                <!--                <el-button-->
+                <!--                    v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_DEL)"-->
+                <!--                    type="text"-->
+                <!--                    icon="el-icon-warning"-->
+                <!--                    class="app-danger"-->
+                <!--                    @click="stopHandler(scope.row)">{{ $t("stop") }}-->
+                <!--                </el-button>-->
                 <!--                <el-button-->
                 <!--                  v-if="$root.CheckPriv($root.Priv.SERVER_GROUP_EDIT)"-->
                 <!--                  icon="el-icon-warning"-->
@@ -124,15 +124,16 @@
           </el-form-item>
 
           <el-form-item :label="$t('group_path_alias')" prop="server_id">
-            <el-select v-model="dialogForm.group_path_alias" placeholder="请选择"  @change="generateCommand">
+            <el-select v-model="dialogForm.group_path_alias" placeholder="请选择" @change="generateCommand">
               <el-option v-for="item in group_path_alias_list" :key="item.alias" :label="item.alias"
                          :value="item.alias"></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item :label="$t('group_config_alias')" prop="server_id">
-            <el-select v-model="dialogForm.group_config_alias" placeholder="请选择"  @change="generateCommand">
-              <el-option v-for="item in group_config_alias_list" :key="item.alias" :label="item.alias" :value="item.alias"></el-option>
+            <el-select v-model="dialogForm.group_config_alias" placeholder="请选择" @change="generateCommand">
+              <el-option v-for="item in group_config_alias_list" :key="item.alias" :label="item.alias"
+                         :value="item.alias"></el-option>
             </el-select>
           </el-form-item>
 
@@ -144,7 +145,8 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button size="small" @click="dialogCloseHandler">{{ $t("cancel") }}</el-button>
-          <el-button :loading="btnLoading" size="small" type="primary" @click="dialogSubmitHandler">{{$t("enter")}}</el-button>
+          <el-button :loading="btnLoading" size="small" type="primary" @click="dialogSubmitHandler">{{ $t("enter") }}
+          </el-button>
         </div>
       </div>
     </el-dialog>
@@ -154,7 +156,7 @@
 </template>
 
 <script>
-import {listGroupConfigAliasApi, listGroupPathAliasApi, listGroupRunApi,saveGroupRunApi} from "@/api/server";
+import {listGroupConfigAliasApi, listGroupPathAliasApi, listGroupRunApi, saveGroupRunApi, startGroupRunApi} from "@/api/server";
 // import ServerXterm from './ServerXterm'
 export default {
   components: {
@@ -197,12 +199,12 @@ export default {
   },
   computed: {},
   methods: {
-    generateCommand(){
+    generateCommand() {
       this.dialogForm.start_command = ""
-      if (this.dialogForm.group_path_alias.length){
+      if (this.dialogForm.group_path_alias.length) {
         this.dialogForm.start_command += `###${this.dialogForm.group_path_alias}### `
       }
-      if (this.dialogForm.group_config_alias.length){
+      if (this.dialogForm.group_config_alias.length) {
         this.dialogForm.start_command += `###${this.dialogForm.group_config_alias}###`
       }
     },
@@ -235,14 +237,14 @@ export default {
         this.btnLoading = true;
 
         saveGroupRunApi(this.dialogForm).then((res) => {
-              this.$root.MessageSuccess(() => {
-                this.dialogCloseHandler();
-                this.btnLoading = false;
-                this.loadTableData();
-              });
-            }).catch((err) => {
-              this.btnLoading = false;
-            });
+          this.$root.MessageSuccess(() => {
+            this.dialogCloseHandler();
+            this.btnLoading = false;
+            this.loadTableData();
+          });
+        }).catch((err) => {
+          this.btnLoading = false;
+        });
       });
     },
 
@@ -265,10 +267,12 @@ export default {
     },
 
     openRunDialogHandler(group) {
+
       this.dialogTableVisible = true;
       this.dialogTitle = this.$t("run");
       this.group = group.group;
-
+      this.dialogForm.group_id = group.group.id
+      this.options = [{id: 0, name: "全局",},]
       group.servers.forEach(res => {
         this.options.push({
           id: res.key,
@@ -278,7 +282,7 @@ export default {
       })
 
       this.loadTableData();
-      this.changeServer();
+
     },
 
     deleteHandler(row) {
@@ -292,8 +296,10 @@ export default {
     },
 
     openAddDialogHandler() {
+
       this.dialogVisible = true;
       this.dialogTitle = this.$t("run");
+      this.changeServer();
 
     },
 
@@ -301,9 +307,17 @@ export default {
       // this.dialogPathCloseHandler();
       this.dialogVisible = true;
       this.dialogTitle = this.$t("run");
-      this.dialogForm.path = row.path;
+
+
+      this.dialogForm.start_user = row.start_user;
+      this.dialogForm.start_command = row.start_command;
       this.dialogForm.server_id = row.server_id;
+      this.dialogForm.group_id = row.group_id;
+      this.dialogForm.group_config_alias = row.group_config_alias;
+      this.dialogForm.group_path_alias = row.group_path_alias;
       this.dialogForm.id = row.id;
+
+      this.changeServer();
     },
 
     loadTableData() {
@@ -324,6 +338,13 @@ export default {
 
     openXtermDialogHandler(row) {
       // this.$root.EmitEventGlobal("openXtermDialogHandler", {group:this.group, server:row});
+    },
+    startHandler(row) {
+      startGroupRunApi({
+        id: row.id
+      }).then((res) => {
+        this.$root.MessageSuccess();
+      });
     }
   },
   mounted() {
@@ -331,5 +352,8 @@ export default {
 
     this.$root.BindEventGlobal("openRunDialogHandler", this.openRunDialogHandler);
   },
+  beforeDestroy() {
+    this.$root.UnBindEventGlobal("openRunDialogHandler");
+  }
 };
 </script>

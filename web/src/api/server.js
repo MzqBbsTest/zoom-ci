@@ -83,6 +83,11 @@ export function saveGroupRunApi(params) {
     return post('/server/group/cmd', params)
 }
 
+export function startGroupRunApi(data) {
+    return post('/server/group/cmd/start', data)
+}
+
+
 export function deleteGroupRunApi(params) {
     return del('/server/group/cmd', params)
 }

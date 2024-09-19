@@ -29,7 +29,9 @@
             <el-table-column prop="id" label="ID" width="80"></el-table-column>
             <el-table-column prop="name" :label="$t('name')"></el-table-column>
             <el-table-column prop="path" :label="$t('path')"></el-table-column>
-            <el-table-column prop="server_id" :label="$t('server_id')"><template slot-scope="scope">{{ servers[scope.row.server_id] }}</template></el-table-column>
+            <el-table-column prop="server_id" :label="$t('server_id')">
+              <template slot-scope="scope">{{ servers[scope.row.server_id] }}</template>
+            </el-table-column>
             <el-table-column :label="$t('operate')" width="380" align="right">
               <template slot-scope="scope">
                 <el-button
@@ -106,7 +108,7 @@
 </template>
 
 <script>
-import {deleteGroupPathApi, listGroupPathApi, listServerApi, saveGroupPathApi} from "@/api/server";
+import {deleteGroupPathApi, listGroupPathApi, saveGroupPathApi} from "@/api/server";
 
 export default {
   data() {
@@ -139,7 +141,7 @@ export default {
           name: "全局",
         },
       ],
-      servers:{"0": "全局"}
+      servers: {"0": "全局"}
     };
   },
   computed: {},
@@ -188,7 +190,8 @@ export default {
       this.group = group.group;
       this.dialogForm.group_id = this.group.id
 
-      group.servers.forEach(res=>{
+      this.options = [{id: 0, name: "全局",},]
+      group.servers.forEach(res => {
         this.options.push({
           id: res.key,
           name: res.label
@@ -251,14 +254,10 @@ export default {
   },
   mounted() {
     this.$root.PageInit();
-
-    this.$root.BindEventGlobal(
-        "openAppPathDialogHandler",
-        this.openAppPathDialogHandler
-    );
-
-
-
+    this.$root.BindEventGlobal("openAppPathDialogHandler", this.openAppPathDialogHandler);
   },
+  beforeDestroy() {
+    this.$root.UnBindEventGlobal("openAppPathDialogHandler");
+  }
 };
 </script>

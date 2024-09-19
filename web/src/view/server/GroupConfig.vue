@@ -155,12 +155,7 @@ export default {
       btnLoading: false,
       tableData: [],
       tableLoading: false,
-      options: [
-        {
-          id: 0,
-          name: "全局",
-        },
-      ],
+      options: [{id: 0, name: "全局",},],
       servers:{"0": "全局"}
     };
   },
@@ -228,6 +223,7 @@ export default {
       this.group = group.group;
       this.dialogForm.group_id = this.group.id
 
+      this.options = [{id: 0, name: "全局",},]
       group.servers.forEach(res=>{
         this.options.push({
           id: res.key,
@@ -298,5 +294,8 @@ export default {
         this.openConfigDialogHandler
     );
   },
+  beforeDestroy() {
+    this.$root.UnBindEventGlobal("openConfigDialogHandler");
+  }
 };
 </script>

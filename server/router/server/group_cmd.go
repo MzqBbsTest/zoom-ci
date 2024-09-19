@@ -49,6 +49,7 @@ func GroupCmdSave(c *gin.Context) {
 
 	groupCmd := server.GroupCmd{
 		ID:               groupForm.Id,
+		Name:             groupForm.Name,
 		GroupConfigAlias: groupForm.GroupConfigAlias,
 		GroupPathAlias:   groupForm.GroupPathAlias,
 		StartCommand:     groupForm.StartCommand,
