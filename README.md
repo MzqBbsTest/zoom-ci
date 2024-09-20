@@ -1,22 +1,30 @@
-<p align="center" style="margin: 20px 0 40px 0;">
-  <img height="100" src="https://zoom-ci.github.io/docs/assets/img/logo_black.png" />
-</p>
-<h3 align="center">Zoom-CI，自动化部署工具！</h3>
+# 项目名称：集群管理工具
 
-<p align="center">Zoom-CI（简称Zoom）是一款开源的自动化部署工具，具备轻量、高效、易用的特点，可以用于前端、服务端远程部署以及客户端打包等多种场景，帮助中小型团队快速进行产品迭代部署。</p>
+## 简介
+
+本项目是一个基于开源项目[zoom-ci](https://github.com/zoom-ci/zoom-ci)的二次开发，旨在方便管理和监控集群环境。通过提供简洁易用的界面和强大的功能，用户可以轻松地对集群进行部署、配置、监控和维护。
+
+## 目录
+
+- [背景](#背景)
+- [新增功能](#新增功能)
+- [安装](#安装)
+- [许可证](#许可证)
+- [致谢](#致谢)
+
+## 背景
+
+本项目是一个基于开源项目[zoom-ci](https://github.com/zoom-ci/zoom-ci)的二次开发，旨在方便管理集群环境。通过提供简洁易用的界面和强大的功能，用户可以轻松地对集群进行部署、配置和维护。
 
 
-## 特性
+## 新增功能
 
-- Go语言开发，单文件执行，使用方便，甚至在树莓派上也可以运行
-- 支持远程和本地两种部署方式（支持客户端打包等场景）
-- 支持自定义构建、部署
-- 支持Git仓库，支持分支、Tag上线
-- 支持WebHook调用，可扩展性强
-- 权限模型灵活自由
-- 完善的上线工作流
+- 集群管理
+- 服务器管理
+- WebSSH
+- 屏蔽部署功能
 
-## 安装说明
+## 安装
 
 1、下载[最新版本release包](https://github.com/zoom-ci/zoom-ci/releases),并将其拷贝到任意目录（比如：~/zoom_workspace）并执行;
 
@@ -47,25 +55,12 @@ Start Running...
   <img height="500"  src="https://zoom-ci.github.io/docs/assets/img/zoom-install.png" />
 </p>
 
-## 文档
 
-#### [https://zoom-ci.github.io/docs/](https://zoom-ci.github.io/docs/)
-
-## TODO
-
-- 安装流程简化（已完成）
-- 支持项目复制（已完成）
-- 支持远程、本地模式（已完成） 
-- 支持定时任务
-- 支持双向WebHook调用
-- 支持中英文切换（已完成）
-
-## QQ群
-<p style="margin: 20px 0 40px 0;">
-  <img height="200" src="https://zoom-ci.github.io/docs/assets/img/qq.png" />
-</p>
 
 
 ## LICENSE
 
 本项目采用 MIT 开源授权许可证，完整的授权说明已放置在 LICENSE 文件中。
+
+## 致谢
+特别感谢 [zoom-ci](https://github.com/zoom-ci/zoom-ci) 的支持和贡献。
