@@ -21,3 +21,4 @@ output
 zoom.ini
 bin/model
 /web/node_modules2/
+/web/dist/
